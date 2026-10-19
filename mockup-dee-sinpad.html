@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup DEE SINPAD — Propuesta de optimización</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F8F8F8;--surface:#fff;--line:#E6E6E6;--line2:#D1D5DB;--text:#2B2B2B;--muted:#717170;
+  --primary:#FF7427;--primary-h:#E5601A;--accent:#FF7427;--orange-bg:#FFF3E1;--blue:#0D64A0;--blue-bg:#E6F0FA;--thead:#F7F6F4;
+  --ok:#14632D;--ok-bg:#DDF3E4;--warn:#7A4B00;--warn-bg:#FFEFC7;--off:#475467;--off-bg:#ECEFF3;--bad:#B42318;--bad-bg:#FDE7E4;
+  --r:12px;--sh:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font:14px/1.5 Roboto,"Segoe UI",system-ui,Arial,sans-serif;color:var(--text);background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #1D6FD6;outline-offset:2px;border-radius:6px}
+.app{display:grid;grid-template-columns:236px minmax(0,1fr) 0;min-height:100vh}
+.app.notes-open{grid-template-columns:236px minmax(0,1fr) 344px}
+.side{background:#fff;border-right:1px solid var(--line);position:sticky;top:0;height:100vh;overflow:auto;padding:16px 12px;display:flex;flex-direction:column;gap:4px}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 14px}
+.brand .mark{width:34px;height:34px;border-radius:50%;border:3px solid var(--accent);display:grid;place-items:center;color:var(--accent);font-weight:700;font-size:13px}
+.brand b{font-size:22px;color:var(--blue);letter-spacing:.3px}
+.navh{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:14px 10px 4px}
+.nav a{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;color:var(--text);text-decoration:none}
+.nav a:hover{background:#F0F3F6}
+.nav a.on{background:#FFF1E6;color:var(--primary-h);font-weight:500}
+.nav a .dot{width:6px;height:6px;border-radius:50%;background:var(--line2)}
+.nav a.on .dot{background:var(--accent)}
+.side .foot{margin-top:auto;font-size:12px;color:var(--muted);padding:12px 8px 0}
+.mainwrap{min-width:0;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:10px;padding:10px 24px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.top .sp{flex:1}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:3px 10px;border-radius:999px;background:var(--warn-bg);color:var(--warn)}
+.tbtn{border:1px solid var(--line2);background:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13px}
+.tbtn[aria-pressed=true]{background:var(--blue-bg);border-color:#9CC3E8;color:var(--blue)}
+.user{display:flex;flex-direction:column;line-height:1.2;text-align:right;font-size:12px}
+.user b{font-size:13px}
+.burger{display:none}
+main{padding:20px 24px 48px;outline:none}
+.page-h{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.page-h h1{margin:0;font-size:22px;font-weight:500}
+.crumb{font-size:12px;color:var(--muted);margin-top:2px}
+.crumb span+span::before{content:"/";margin:0 6px;color:var(--line2)}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);padding:20px}
+.card+.card{margin-top:16px}
+h2{font-size:16px;margin:0 0 10px;font-weight:500}
+h3{font-size:14px;margin:0 0 6px;font-weight:500}
+p{margin:0 0 8px}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:999px;border:1px solid transparent;padding:9px 18px;cursor:pointer;font-weight:500;background:#fff;text-decoration:none}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-h)}
+.btn-primary[disabled]{background:#D9C7BD;cursor:not-allowed}
+.btn-ghost{border-color:var(--line2);color:var(--text)}
+.btn-ghost:hover{background:#F4F6F8}
+.btn-sm{padding:5px 12px;font-size:13px}
+.btn-link{border:0;background:none;color:var(--blue);padding:4px 6px;border-radius:6px;cursor:pointer;text-decoration:underline}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:2px 10px;border-radius:999px;white-space:nowrap}
+.b-ok{background:var(--ok-bg);color:var(--ok)}.b-warn{background:var(--warn-bg);color:var(--warn)}.b-off{background:var(--off-bg);color:var(--off)}
+.b-draft{background:#fff;color:var(--off);border:1px dashed var(--line2)}.b-conf{background:var(--blue-bg);color:var(--blue)}.b-bad{background:var(--bad-bg);color:var(--bad)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.fchip{border:1px solid var(--line2);background:#fff;border-radius:999px;padding:5px 12px;cursor:pointer;font-size:13px}
+.fchip[aria-pressed=true]{background:#FFF1E6;border-color:#F3B58C;color:var(--primary-h);font-weight:500}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:14px}
+label.l{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.in,select.in,textarea.in{width:100%;border:1px solid var(--line2);border-radius:10px;padding:9px 12px;background:#fff;min-height:40px}
+.in[readonly]{background:#F4F6F8;color:var(--muted)}
+.in[aria-invalid=true]{border-color:var(--bad);background:#FFF8F7}
+.err{color:var(--bad);font-size:12px;margin-top:3px;min-height:0}
+.hint{color:var(--muted);font-size:12px;margin-top:3px}
+.tblw{overflow:auto;border-radius:10px;border:1px solid var(--line)}
+table.tbl{width:100%;border-collapse:collapse;min-width:900px}
+.tbl th{background:var(--thead);text-align:left;font-size:12px;letter-spacing:.04em;text-transform:uppercase;padding:10px 12px;white-space:nowrap}
+.tbl td{padding:11px 12px;border-top:1px solid var(--line);vertical-align:middle}
+.tbl tr:hover td{background:#FAFBFC}
+.tbl .sub{color:var(--muted);font-size:12px}
+.tbl .r{text-align:right}
+.acts{display:flex;gap:6px;align-items:center;justify-content:flex-end;position:relative}
+.kebab{border:1px solid var(--line2);background:#fff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-weight:700}
+.menu{position:absolute;right:0;top:36px;background:#fff;border:1px solid var(--line);box-shadow:0 8px 24px rgba(16,24,40,.16);border-radius:10px;min-width:220px;z-index:15;padding:6px;text-align:left}
+.menu button{display:flex;width:100%;gap:8px;text-align:left;border:0;background:none;padding:8px 10px;border-radius:6px;cursor:pointer}
+.menu button:hover{background:#F4F6F8}
+.menu hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+.menu .danger{color:var(--bad)}
+.pager{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:13px}
+.mini{height:6px;background:var(--off-bg);border-radius:6px;overflow:hidden;margin-top:4px;min-width:80px}
+.mini i{display:block;height:100%;background:var(--accent)}
+.stepper{display:flex;gap:8px;list-style:none;padding:0;margin:0 0 16px;flex-wrap:wrap}
+.stepper li{flex:1;min-width:180px}
+.stp{width:100%;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;text-align:left}
+.stp[disabled]{cursor:default;opacity:.65}
+.stp .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--off-bg);font-weight:700;font-size:13px}
+.stepper .cur .stp{border-color:var(--accent);box-shadow:0 0 0 3px #FFE3D0}
+.stepper .cur .n{background:var(--primary);color:#fff}
+.stepper .done .n{background:var(--ok-bg);color:var(--ok)}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.wizfoot{display:flex;justify-content:space-between;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.wizfoot .r{display:flex;gap:10px;flex-wrap:wrap}
+.alert{border-radius:10px;padding:10px 14px;display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
+.a-info{background:var(--blue-bg);color:#0B3F70}.a-warn{background:var(--warn-bg);color:var(--warn)}.a-ok{background:var(--ok-bg);color:var(--ok)}.a-bad{background:var(--bad-bg);color:var(--bad)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
+.tab{border:0;background:none;padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;color:var(--muted);font-weight:500}
+.tab[aria-selected=true]{color:var(--primary-h);border-bottom-color:var(--accent)}
+.amb{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.tree{border:1px solid var(--line);border-radius:10px;max-height:520px;overflow:auto;padding:6px}
+.tree summary{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;cursor:pointer;list-style:none}
+.tree summary::-webkit-details-marker{display:none}
+.tree summary::before{content:"▸";color:var(--muted);width:12px;transition:transform .15s}
+.tree details[open]>summary::before{transform:rotate(90deg)}
+.tree summary:hover{background:#F4F6F8}
+.tree .provs{margin-left:22px}
+.tree .dists{list-style:none;margin:0 0 4px 28px;padding:0;columns:2;column-gap:12px}
+.tree .dists li{break-inside:avoid}
+.tree .dists label{display:flex;gap:8px;align-items:center;padding:3px 6px;border-radius:6px;cursor:pointer}
+.tree .dists label:hover{background:#F4F6F8}
+.tree .nm{flex:1}
+.tree .cnt{font-size:12px;color:var(--muted);background:var(--off-bg);padding:1px 8px;border-radius:999px}
+.tree .cnt.full{background:var(--ok-bg);color:var(--ok)}
+.tree mark{background:#FFE08A;border-radius:3px}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--primary)}
+.sticky{position:sticky;top:64px}
+.counter{border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.counter .big{font-size:30px;font-weight:700;line-height:1}
+.counter .big small{font-size:15px;font-weight:400;color:var(--muted)}
+.c-ok{background:var(--ok-bg);color:var(--ok)}.c-warn{background:var(--warn-bg);color:var(--warn)}.c-bad{background:var(--bad-bg);color:var(--bad)}.c-off{background:var(--off-bg);color:var(--off)}
+.bar{height:8px;border-radius:8px;background:rgba(0,0,0,.1);margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:currentColor;opacity:.75}
+.selbox{border:1px solid var(--line);border-radius:10px;max-height:340px;overflow:auto;padding:6px}
+.selbox details>summary{cursor:pointer;padding:5px 6px;border-radius:6px;display:flex;gap:8px;align-items:center}
+.selbox details>summary:hover{background:#F4F6F8}
+.selbox .in2{margin-left:18px}
+.chipw{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 8px 18px}
+.chip{border:1px solid var(--line2);background:#fff;border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
+.chip:hover{border-color:var(--bad);color:var(--bad)}
+.chip.ro{cursor:default}.chip.ro:hover{border-color:var(--line2);color:inherit}
+textarea.paste{width:100%;min-height:220px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
+.kpi{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi b{display:block;font-size:22px}
+.steps3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.stepbox{border:1px solid var(--line);border-radius:12px;padding:14px}
+.dz{border:2px dashed var(--line2);border-radius:12px;padding:24px;text-align:center;color:var(--muted)}
+.empty{text-align:center;padding:36px 12px;color:var(--muted)}
+.empty svg{margin-bottom:8px}
+.empty h3{color:var(--text);font-size:16px}
+.tl{margin:10px 0 4px}
+.tl .track{height:10px;background:var(--off-bg);border-radius:10px;overflow:hidden}
+.tl .track i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#F59E0B)}
+.tl .ends{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px}
+dl.kv{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 16px;margin:0}
+dl.kv dt{color:var(--muted)}dl.kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.modal{position:fixed;inset:0;background:rgba(16,24,40,.5);display:grid;place-items:center;z-index:50;padding:16px}
+.modal .box{background:#fff;border-radius:16px;max-width:520px;width:100%;padding:24px;box-shadow:0 24px 64px rgba(16,24,40,.3)}
+.modal .box h2{font-size:18px}
+.modal .acts2{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#1A2330;color:#fff;padding:10px 18px;border-radius:10px;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:90vw}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.pin{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;border:0;cursor:pointer;margin-left:6px;vertical-align:middle;flex:none}
+body.nopins .pin{display:none}
+.notes{background:#fff;border-left:1px solid var(--line);position:sticky;top:0;height:100vh;overflow:auto;width:344px;padding:16px;display:none}
+.app.notes-open .notes{display:block}
+.notes h2{font-size:15px}
+.note{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.note .hd{display:flex;gap:8px;align-items:center;margin-bottom:4px;font-weight:500}
+.note .num{background:var(--blue);color:#fff;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;flex:none}
+.note .src{font-size:11px;font-weight:500;padding:1px 8px;border-radius:999px;margin-left:auto}
+.s-inf{background:var(--blue-bg);color:var(--blue)}.s-sen{background:#FFF1E6;color:var(--primary-h)}.s-val{background:var(--warn-bg);color:var(--warn)}
+.note p{margin:0;color:#344054;font-size:13px}
+.note.flash{animation:fl 1.4s}
+@keyframes fl{0%,60%{box-shadow:0 0 0 3px #9CC3E8}100%{box-shadow:none}}
+.matrix td,.matrix th{vertical-align:top}
+.rec-ok{color:var(--ok)}.rec-bad{color:var(--bad)}
+.hero{background:linear-gradient(135deg,#0F5C9E,#0B4A82);color:#fff;border-radius:var(--r);padding:24px}
+.hero h1{margin:0 0 6px;font-size:24px;font-weight:500}
+.hero p{margin:0;opacity:.92;max-width:78ch}
+.cols2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.cols2>.card{margin-top:0}
+ul.tight{margin:0;padding-left:18px}ul.tight li{margin:3px 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:1180px){.app.notes-open{grid-template-columns:236px minmax(0,1fr) 0}.app.notes-open .notes{position:fixed;right:0;top:0;z-index:40;box-shadow:-8px 0 24px rgba(16,24,40,.2)}}
+@media (max-width:900px){.app,.app.notes-open{grid-template-columns:minmax(0,1fr)}.side{position:fixed;left:-260px;width:236px;z-index:45;transition:left .2s}.side.open{left:0}.burger{display:inline-block}.amb,.cols2,.steps3{grid-template-columns:1fr}.filters,.g2,.g3,.g4,.kpis{grid-template-columns:1fr 1fr}main{padding:16px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* ===== Estilo SINPAD · Módulo Consulta ===== */
+body{background:var(--bg);color:var(--text)}
+.ic,.iconbtn svg,.bell svg,.btn svg{display:inline-flex}
+.ic svg,.iconbtn svg,.bell svg,.btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ic{align-items:center}
+.side{padding:14px 10px;gap:2px;border-right:1px solid #EDEDED}
+.brand{padding:4px 8px 16px}
+.brand .logo{width:158px;height:auto;display:block}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a,.nav .grp{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:var(--text);text-decoration:none;font-size:14px}
+.nav a:hover{background:#F6F6F6}
+.nav a.on{background:#F3F3F3;color:var(--primary);font-weight:700}
+.nav .grp{margin-top:6px;cursor:default;line-height:1.25}
+.nav .grp .chev{margin-left:auto;display:inline-flex}
+.nav .grp .chev svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav .grp.open{background:#F3F3F3;color:var(--primary);font-weight:500}
+.nav a.sub{padding:6px 12px 6px 40px;font-size:13.5px}
+.nav a.sub::before{content:"–";margin-right:8px;color:#9B9B9B}
+.nav a.sub.on{background:none;color:var(--primary);font-weight:700}
+.nav a.sub.on::before{color:var(--primary)}
+.app.side-off{grid-template-columns:0 minmax(0,1fr) 0}
+.app.side-off.notes-open{grid-template-columns:0 minmax(0,1fr) 344px}
+.app.side-off .side{overflow:hidden;padding:0;border:0;visibility:hidden}
+.top{padding:10px 24px;gap:12px;border-bottom:1px solid #EDEDED}
+.iconbtn{display:inline-grid!important;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid #D1D5DB;background:#fff;color:#2B2B2B;cursor:pointer}
+.iconbtn:hover{background:#F6F6F6}
+.tbtn{border-radius:999px;border:1px solid #D1D5DB;padding:6px 14px;color:#6B727F}
+.tbtn[aria-pressed=true]{background:var(--orange-bg);border-color:var(--primary);color:var(--primary)}
+.tag{background:#FFF3E1;color:#9A4A00;border:1px solid #FFD9A8}
+.bell{position:relative;display:grid;place-items:center;width:38px;height:38px;border:0;background:none;cursor:pointer;color:#2B2B2B;border-radius:50%}
+.bell:hover{background:#F6F6F6}
+.bell .bdg{position:absolute;top:2px;right:0;min-width:17px;height:17px;border-radius:9px;background:#FC9CB3;color:#7A1030;font-size:10px;font-weight:700;display:grid;place-items:center;padding:0 4px}
+.user{text-align:left;letter-spacing:.02em}
+.user b{font-size:12.5px;color:#2B2B2B;font-weight:700}
+.user span{font-size:11px;color:#7A7A7A}
+.page-h{align-items:center;gap:14px;margin-bottom:18px}
+.page-h h1{font-size:22px;font-weight:500;color:#2B2B2B}
+.page-h .crumb{margin-left:auto;margin-top:0;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#7A7A7A}
+.page-h .pa{display:flex;gap:8px}
+.card{border-radius:12px;border:1px solid #EFEFEF;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.btn{border-radius:999px;padding:9px 20px}
+.btn svg{width:17px;height:17px}
+.btn-primary{background:#FF7427;color:#fff;border-color:#FF7427}
+.btn-primary:hover{background:#E5601A;border-color:#E5601A}
+.btn-primary[disabled]{background:#FFCDAE;border-color:#FFCDAE;color:#fff}
+.btn-ghost{background:#fff;border-color:#FF7427;color:#FF7427}
+.btn-ghost:hover{background:#FFF3E1}
+.btn-ghost[disabled]{border-color:#E0E0E0;color:#B5B5B5}
+.btn-link{color:var(--blue)}
+.in,select.in,textarea.in{border:1px solid #E0E0E0;border-radius:999px;padding:9px 16px;color:#2B2B2B}
+textarea.in{border-radius:18px}
+.in:focus{border-color:#FF7427;outline:0;box-shadow:0 0 0 3px #FFE3CF}
+.in[readonly]{background:#F8F8F8}
+div:has(>label.l){position:relative;padding-top:8px}
+label.l{position:absolute;top:0;left:14px;z-index:1;background:#fff;padding:0 6px;font-size:11.5px;line-height:16px;color:#7A7A7A;margin:0;max-width:calc(100% - 28px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+div:has(>label.l):focus-within>label.l{color:#FF7427}
+.filters{align-items:start}
+.tabs{border-bottom:0;gap:8px;align-items:center;margin-bottom:14px}
+.tabl{color:#FF7427;font-weight:500;margin-right:2px}
+.tab{display:inline-flex;align-items:center;gap:8px;border:1px solid #D1D5DB;border-radius:6px;padding:8px 14px;background:#fff;color:#6B727F;font-weight:500}
+.tab:hover{background:#FAFAFA}
+.tab[aria-selected=true]{background:#FFF3E1;border-color:#FF7427;color:#FF7427}
+.tab .ic svg{width:16px;height:16px}
+.fchip{border-radius:6px;border-color:#D1D5DB;color:#6B727F}
+.fchip[aria-pressed=true]{background:#FFF3E1;border-color:#FF7427;color:#FF7427}
+.stepper .cur .stp{border-color:#FF7427;background:#FFF3E1;box-shadow:none}
+.stepper .cur .n{background:#FF7427}
+.stp{border-radius:10px}
+.tblw{border-radius:12px;border-color:#E6E6E6}
+.tbl th{background:#F7F6F4;color:#717170;text-transform:none;letter-spacing:0;font-size:13px;font-weight:500}
+.tbl tr:hover td{background:#FFFBF7}
+.kebab{border-radius:50%;border-color:#D1D5DB}
+.kpis{gap:12px}
+.kpi{position:relative;padding:12px 14px 12px 70px;min-height:68px;display:flex;flex-direction:column;justify-content:center;border-radius:12px;border:1px solid #EDEDED;background:#fff;color:#717170;font-size:12.5px}
+.kpi b{font-size:22px;color:#2B2B2B;line-height:1.1}
+.kpi::before{content:"";position:absolute;left:14px;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:12px;background:#DBEAFD center/22px no-repeat;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563EB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 20V11M12 20V4M19 20v-6'/%3E%3C/svg%3E")}
+.kpi:nth-child(2)::before{background-color:#DBFCE7;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 20V11M12 20V4M19 20v-6'/%3E%3C/svg%3E")}
+.kpi:nth-child(3)::before{background-color:#FFEDD6;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23EA580C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 20V11M12 20V4M19 20v-6'/%3E%3C/svg%3E")}
+.kpi:nth-child(4)::before{background-color:#FFE2E2;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 20V11M12 20V4M19 20v-6'/%3E%3C/svg%3E")}
+input[type=checkbox]{accent-color:#FF7427}
+.pin,.note .num{background:#0D64A0}
+.s-sen{background:#FFF3E1;color:#B45309}
+.hero{background:linear-gradient(135deg,#0D64A0,#0A4F80)}
+.alert{border-radius:12px}
+.chip{border-radius:999px}
+.kebab,.menu{border-color:#E0E0E0}
+@media (max-width:900px){.app.side-off .side{visibility:visible}.page-h .crumb{margin-left:0;width:100%}}
+.top{flex-wrap:wrap;gap:8px}.top>*{white-space:nowrap}.tbtn{padding:6px 12px;font-size:12.5px}.tag{font-size:11.5px}
+.app.notes-open .user span{display:none}.app.notes-open .tag{padding:3px 8px;font-size:10.5px}.app.notes-open .top>.iconbtn+.tag+.sp{flex:0 1 0}
+.app.notes-open .top .tag{display:none}.amb .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.amb .steps3{grid-template-columns:1fr}.btn{white-space:nowrap}
+.filters{grid-template-columns:1.5fr 1.3fr 1.3fr 1fr auto}
+#rows{--x:0}.tbl th{white-space:normal;line-height:1.25}.tbl td,.tbl th{padding-left:10px;padding-right:10px}.tbl .acts .btn-sm{padding:5px 10px}
+.menu button[disabled]{opacity:.55;cursor:not-allowed}.menu button[disabled]:hover{background:none}
+.menu{min-width:250px}.menu button{white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="app notes-open" id="app">
+  <aside class="side" id="side" aria-label="Navegación del mockup">
+    <div class="brand"><img class="logo" alt="SINPAD" src="data:image/png;base64,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"></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="foot">Mockup de propuesta · datos ficticios · no conectado al sistema real.<br><button class="btn-link" data-act="reset" style="padding-left:0">Reiniciar mockup</button></div>
+  </aside>
+  <div class="mainwrap">
+    <header class="top">
+      <button class="iconbtn burger" data-act="burger" aria-label="Mostrar u ocultar el menú"><i data-ic="menu"></i></button>
+      <span class="tag">DATOS DE EJEMPLO</span>
+      <span class="sp"></span>
+      <button class="tbtn" data-act="notes" id="btnNotes" aria-pressed="true">Notas de diseño</button>
+      <button class="tbtn" data-act="pins" id="btnPins" aria-pressed="true">Marcadores</button>
+      <button class="btn btn-primary btn-sm" data-act="toast" data-msg="Mesa de ayuda (ejemplo): en producción abriría el formulario de incidencias"><i data-ic="headset"></i> Reportar incidencias (Mesa de ayuda)</button>
+      <button class="bell" data-act="toast" data-msg="Notificaciones (ejemplo)" aria-label="Notificaciones, 3 sin leer"><i data-ic="bell"></i><span class="bdg">3</span></button>
+      <div class="user"><b>USUARIO DIREH</b><span>DIREH · EJEMPLO</span></div>
+    </header>
+    <main id="view" tabindex="-1"></main>
+  </div>
+  <aside class="notes" id="notes" aria-label="Notas de diseño"></aside>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.prototype.slice.call(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+const HOY=new Date(2026,9,16);
+const pad=n=>String(n).padStart(2,'0');
+const fmt=d=>pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();
+const parseISO=s=>{const a=s.split('-').map(Number);return new Date(a[0],a[1]-1,a[2]);};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
+const diffDays=(a,b)=>Math.round((b-a)/86400000);
+const endOfISO=(iso,plazo)=>addDays(parseISO(iso),plazo-1);
+const toISO=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+
+/* ---------- Datos geográficos (distritos reales de Amazonas y Lambayeque) ---------- */
+const GEO={
+ "Amazonas":{
+  "Chachapoyas":["Chachapoyas","Asunción","Balsas","Cheto","Chiliquín","Chuquibamba","Granada","Huancas","La Jalca","Leimebamba","Levanto","Magdalena","Mariscal Castilla","Molinopampa","Montevideo","Olleros","Quinjalca","San Francisco de Daguas","San Isidro de Maino","Soloco","Sonche"],
+  "Bagua":["Bagua","Aramango","Copallín","El Parco","Imaza","La Peca"],
+  "Bongará":["Jumbilla","Chisquilla","Churuja","Corosha","Cuispes","Florida","Jazán","Recta","San Carlos","Shipasbamba","Valera","Yambrasbamba"],
+  "Condorcanqui":["Nieva","El Cenepa","Río Santiago"],
+  "Luya":["Lamud","Camporredondo","Cocabamba","Colcamar","Conila","Inguilpata","Longuita","Lonya Chico","Luya","Luya Viejo","María","Ocalli","Ocumal","Pisuquía","Providencia","San Cristóbal","San Francisco del Yeso","San Jerónimo","San Juan de Lopecancha","Santa Catalina","Santo Tomás","Tingo","Trita"],
+  "Rodríguez de Mendoza":["San Nicolás","Chirimoto","Cochamal","Huambo","Limabamba","Longar","Mariscal Benavides","Milpuc","Omia","Santa Rosa","Totora","Vista Alegre"],
+  "Utcubamba":["Bagua Grande","Cajaruro","Cumba","El Milagro","Jamalca","Lonya Grande","Yamón"]
+ },
+ "Lambayeque":{
+  "Chiclayo":["Chiclayo","Cayaltí","Chongoyape","Eten","Eten Puerto","José Leonardo Ortiz","La Victoria","Lagunas","Monsefú","Nueva Arica","Oyotún","Patapo","Picsi","Pimentel","Pomalca","Pucalá","Reque","Santa Rosa","Saña","Tumán"],
+  "Ferreñafe":["Ferreñafe","Cañaris","Incahuasi","Manuel Antonio Mesones Muro","Pítipo","Pueblo Nuevo"],
+  "Lambayeque":["Lambayeque","Chóchope","Íllimo","Jayanca","Mochumí","Mórrope","Motupe","Olmos","Pacora","Salas","San José","Túcume"]
+ }
+};
+const PELIGROS=["Huaico","Sismo","Deflagración","Tsunami (maremoto)","Derrumbe de cerros"];
+const EVENTOS=["Peligro inminente","Impacto de daños"];
+const key=(d,p,x)=>d+'|'+p+'|'+x;
+function allKeys(depts){const o=[];Object.keys(GEO).forEach(d=>{if(depts&&depts.indexOf(d)<0)return;Object.keys(GEO[d]).forEach(p=>GEO[d][p].forEach(x=>o.push(key(d,p,x))));});return o;}
+const AMAZ=allKeys(['Amazonas']);
+
+/* ---------- Declaratorias de ejemplo ---------- */
+const DEES=[
+ {id:'151',num:'D.S. N° 151-2026-PCM',evento:'Peligro inminente',peligro:'Huaico',inicio:'2026-10-16',plazo:30,nDS:707,registro:'Pendiente',cargados:412,prorrogas:0},
+ {id:'146',num:'D.S. N° 146-2026-PCM',evento:'Impacto de daños',peligro:'Sismo',inicio:'2026-09-20',plazo:30,nDS:45,registro:'Confirmado',prorrogas:0},
+ {id:'148',num:'D.S. N° 148-2026-PCM',evento:'Impacto de daños',peligro:'Sismo',inicio:'2026-09-14',plazo:90,nDS:84,registro:'Confirmado',prorrogas:0,ambito:AMAZ.slice(),ver:1,url:'https://busquedas.elperuano.pe/dispositivo/NL/ejemplo-ds-148-2026-pcm',
+  hist:[['14/09/2026 08:52','Usuario DIREH 1','Inició el registro','D.S. N° 148-2026-PCM · plazo 90 días'],
+        ['14/09/2026 09:20','Usuario DIREH 1','Importó el ámbito desde Excel','86 filas: 84 válidas · 1 duplicada omitida · 1 inválida rechazada'],
+        ['14/09/2026 09:41','Usuario DIREH 1','Cotejó contra el anexo del D.S.','84 de 84 según el decreto'],
+        ['14/09/2026 09:44','Usuario DIREH 1','Confirmó el registro','Versión 1 · ámbito disponible para otros módulos']]},
+ {id:'139',num:'D.S. N° 139-2026-PCM',evento:'Impacto de daños',peligro:'Huaico',inicio:'2026-10-15',plazo:90,nDS:156,registro:'Confirmado',prorrogas:0},
+ {id:'120',num:'D.S. N° 120-2026-PCM',evento:'Peligro inminente',peligro:'Deflagración',inicio:'2026-01-05',plazo:60,nDS:12,registro:'Confirmado',prorrogas:1},
+ {id:'118',num:'D.S. N° 118-2026-PCM',evento:'Peligro inminente',peligro:'Sismo',inicio:'2026-05-08',plazo:10,nDS:23,registro:'Confirmado',prorrogas:0},
+ {id:'112',num:'D.S. N° 112-2026-PCM',evento:'Impacto de daños',peligro:'Sismo',inicio:'2026-05-18',plazo:90,nDS:38,registro:'Confirmado',prorrogas:0},
+ {id:'097',num:'D.S. N° 097-2026-PCM',evento:'Impacto de daños',peligro:'Tsunami (maremoto)',inicio:'2026-01-01',plazo:60,nDS:9,registro:'Confirmado',prorrogas:1},
+ {id:'091',num:'D.S. N° 091-2026-PCM',evento:'Peligro inminente',peligro:'Derrumbe de cerros',inicio:'2026-05-04',plazo:4,nDS:5,registro:'Confirmado',prorrogas:0}
+];
+const dee=id=>DEES.find(d=>d.id===id)||DEES[2];
+const endOf=d=>endOfISO(d.inicio,d.plazo);
+function vig(d){
+  const left=diffDays(HOY,endOf(d));
+  if(left<0)return {k:'off',t:'Finalizado',left};
+  return {k:'ok',t:'Vigente',left,soon:left<=7?(left===0?'Vence hoy':'Vence en '+left+' día'+(left>1?'s':'')):''};
+}
+const vigBadge=v=>`<span class="badge b-${v.k}">${esc(v.t)}</span>`;
+const regBadge=d=>d.registro==='Pendiente'?'<span class="badge b-draft">Pendiente</span>':'<span class="badge b-conf">✓ Confirmado</span>';
+const FONDES={'Amazonas|Bagua|Imaza':3,'Amazonas|Bagua|Bagua':1};
+
+/* ---------- Estado global ---------- */
+const S={route:'',wizD:null,wizP:null,f:{q:'',vig:'',reg:'',pel:'',chip:''},demoPr:false,ctab:'resumen',prList:[],
+  rect:{items:[],tipo:'',motivo:''},notesOpen:window.innerWidth>=1180,pins:true,pr0:true};
+
+/* ---------- Utilidades de UI ---------- */
+const IC={
+ menu:'<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>',
+ bell:'<svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"/></svg>',
+ headset:'<svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v5H5a1 1 0 0 1-1-1zM20 14h-3v5h2a1 1 0 0 0 1-1zM17 19c0 1.5-2 2-5 2"/></svg>',
+ star:'<svg viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',
+ doc:'<svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h6"/></svg>',
+ folder:'<svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+ chev:'<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>',
+ list:'<svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>',
+ upload:'<svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>',
+ info:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+ map:'<svg viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11zM12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>',
+ clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+ refresh:'<svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-4L4 9M4 4v5h5M4 13a8 8 0 0 0 14 4l2-2M20 20v-5h-5"/></svg>',
+ down:'<svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg>',
+ plus:'<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>'
+};
+const ico=n=>`<span class="ic" aria-hidden="true">${IC[n]}</span>`;
+const pin=n=>`<button class="pin" data-act="pin" data-n="${n}" aria-label="Ver nota ${n}">${n}</button>`;
+function pageHead(title,crumbs,actions){return `<div class="page-h"><h1>${title}</h1><div class="crumb">${crumbs.map(c=>`<span>${esc(c)}</span>`).join('')}</div>${actions?`<div class="pa">${actions}</div>`:''}</div>`;}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2800);}
+function download(name,text){const b=new Blob(['\ufeff'+text],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
+function csvOf(keys){return 'DEPARTAMENTO,PROVINCIA,DISTRITO\n'+keys.map(k=>k.split('|').map(v=>'"'+v+'"').join(',')).join('\n');}
+function groupKeys(keys){const g={};keys.forEach(k=>{const a=k.split('|');(g[a[0]]=g[a[0]]||{});(g[a[0]][a[1]]=g[a[0]][a[1]]||[]).push(a[2]);});return g;}
+
+/* ---------- Notas de diseño por pantalla ---------- */
+const NOTES={
+ lista:[
+  [1,'inf','Edición directa antes de validar','El informe pide editar y eliminar directamente antes de la "validación definitiva". La lista distingue Pendiente de Confirmado y ofrece "Continuar registro" en los registros pendientes.'],
+  [2,'sen','Dos estados, no uno','Hoy "VIGENTE" aparece aunque el registro no esté confirmado. Aquí el Estado de declaratoria (Vigente / Finalizado) se deriva de las fechas y el Estado de registro (Pendiente / Confirmado) va en otra columna. "Finalizado" va en gris, no en rojo: no es un error. Si faltan 7 días o menos, se muestra "Vence en N días" como texto de apoyo.'],
+  [3,'sen','Término derivado','La fecha de término se calcula (inicio + plazo − 1), nunca se digita: evita descuadres como el hallado en la fila de 60 días. El plazo muestra su unidad.'],
+  [4,'inf','Avance de cargas grandes','Un registro pendiente de 707 distritos muestra "412 de 707 cargados": la carga se puede retomar en lugar de requerir una jornada completa (informe 2.2).'],
+  [5,'sen','Acciones según el estado','Una acción principal visible por fila y un menú ⋮ solo con lo permitido. Hoy aparecen 5 acciones siempre, con dos lápices idénticos. "Eliminar" pasa a "Anular registro pendiente" con motivo.'],
+  [6,'sen','Filtros y lenguaje','Filtros por vigencia, registro y peligro; textos y paginador en español; "Reportar incidencias" deja de competir con el botón principal.']
+ ],
+ 'nueva-1':[
+  [1,'sen','Decreto estructurado','Tipo, número, año y sector en campos separados: el título se arma solo y se evitan "DS 111" o "DS-PRUEBA2". Permite detectar duplicados.'],
+  [2,'sen','Término calculado en vivo','Sin plazo por defecto y con la fecha de término a la vista. El tope de plazo por tipo de evento se validaría contra el reglamento (por confirmar).'],
+  [3,'sen','URL validada','Acepta solo dominios de El Peruano o gob.pe. Hoy el campo admite cualquier texto: en QA se vieron "WWW" y "www.google.com", y además sigue editable después de guardar los datos.'],
+  [4,'inf','Referencia para el control','"N° de distritos según el D.S." es el dato que permite verificar que el ámbito registrado corresponde al decreto (informe 2.4, último párrafo).'],
+  [5,'val','Traslapes (por validar)','Aviso si ya existe una DEE vigente con el mismo peligro y distritos coincidentes. Requiere confirmar la regla con DIREH.'],
+  [6,'sen','Errores por campo','Hoy, al guardar con vacíos, todos los campos se pintan de rojo con un aviso genérico ("Aún hay campos vacíos"). Aquí cada campo dice qué falta, hay un resumen accesible y el foco va al primer error. Pruebe vaciar el plazo y pulsar Siguiente.']
+ ],
+ 'nueva-2':[
+  [1,'inf','Selección múltiple','Departamentos, provincias y distritos con casillas de tres estados (todo / parcial / nada), búsqueda y contadores (informe 2.4).'],
+  [2,'inf','Provincia completa con exclusión directa','Marca la provincia y desmarca los distritos que sobran: reemplaza el "agregar todos y luego eliminar", que es justo lo que hoy falla.'],
+  [3,'inf','Carga masiva por archivo','Plantilla Excel/CSV por ubigeo, vista previa y reporte de errores (informe 2.4, primer punto).'],
+  [4,'inf','Duplicados y omisiones','Un distrito no puede quedar dos veces. Las omisiones se detectan comparando con el N° declarado (informe 2.4, validaciones automáticas).'],
+  [5,'sen','Panel siempre visible','El ámbito seleccionado se ve agrupado por departamento y provincia con conteos; se puede quitar un distrito sin recargar nada.'],
+  [6,'sen','Guardar y retomar','"Guardar avance" en cualquier momento. Un D.S. grande deja de depender de terminarlo en una sola sentada. Hoy el ámbito se registra en la misma pantalla de los datos, con "Limpiar tabla" (botón azul, sin confirmación) junto a Guardar; aquí "Limpiar todo" pide confirmación.']
+ ],
+ 'nueva-3':[
+  [1,'inf','Correspondencia con el D.S.','El informe exige preservar controles de integridad. Aquí: contador contra el decreto, resumen por provincia para cotejar con el anexo y exportación a Excel para el expediente.'],
+  [2,'sen','Confirmación consciente','Lista de verificación y advertencia clara de que el registro se bloquea, con la ruta de rectificación. Hoy solo hay un "¿Está seguro?".'],
+  [3,'sen','Efecto aguas abajo','Se avisa que al confirmar el ámbito queda disponible para otros módulos (p. ej. FONDES, según el informe 1.3).']
+ ],
+ consulta:[
+  [1,'inf','Ámbito legible','Agrupado por departamento y provincia, con buscador y exportación. Sustituye la tabla plana con scroll interno de siete filas visibles.'],
+  [2,'sen','Cabecera con contexto','Estado, vigencia y días restantes a la vista; acciones: registrar prórroga, solicitar rectificación y exportar.'],
+  [3,'sen','Historial de auditoría','Quién hizo qué y cuándo, incluida la importación y el cotejo. Hoy no se evidencia.'],
+  [4,'inf','Corregir sin correo a OTIC','El informe 2.2 describe distritos que el usuario no puede quitar y que requieren correo a OTIC. Tras confirmar, la vía es una rectificación controlada con motivo.'],
+  [5,'sen','Enlace y no edición','Enlace a la publicación en El Peruano; el URL ya no es editable en modo consulta. Hoy sigue editable y en QA hay registros con "000000" como enlace.'],
+  [6,'inf','Omisiones que hoy pasan desapercibidas','En QA existe un registro confirmado con 83 distritos de Amazonas, que tiene 84. Sin un dato de control contra el D.S. el sistema no puede advertir una omisión así (informe 2.2: riesgo de omisión).']
+ ],
+ prorrogas:[
+  [1,'sen','Contexto de la DEE','La lista dice de qué decreto son las prórrogas y muestra su vigencia. Hoy el título es genérico.'],
+  [2,'sen','Estado vacío útil','Explica qué falta y ofrece la acción. Hoy: tabla vacía y "0 of 0".'],
+  [3,'sen','Más columnas y filtros','Término, número de distritos y filtro por situación.'],
+  [4,'val','Reglas por validar','¿Se puede registrar una prórroga cuando la DEE ya finalizó? ¿Cuántas se permiten? ¿La confirmación actualiza el término de la DEE madre?'],
+  [5,'sen','Datos basura y menú superpuesto','En QA hay prórrogas con "sdfgsdfg" como dispositivo y "dfsgsdfg" como URL: no se valida nada. Además el menú de opciones tapa el paginador y el botón "Salir". Aquí el dispositivo es estructurado, el URL se valida y las acciones dependen de la situación.']
+ ],
+ 'prorroga-1':[
+  [1,'sen','Inicio sugerido','El inicio propone el día siguiente al término de la DEE (13/12/2026). Hoy se digita y puede dejar huecos o traslapes.'],
+  [2,'sen','Sin plazo por defecto','Hoy el plazo aparece precargado en 30 sin que el usuario lo decida. Aquí obliga a ingresarlo y muestra el término.'],
+  [3,'sen','Pasos numerados','Tres pasos con estado (pendiente, actual, completo), en lugar de dos iconos sin contexto.']
+ ],
+ 'prorroga-2':[
+  [1,'inf','Mismo selector, ya precargado','Reutiliza el selector de la DEE con el ámbito original marcado: solo se desmarca lo que no se prorroga (informe: reducir operaciones manuales). Hoy la prórroga parte con la lista vacía y solo permite agregar distrito por distrito: no tiene ni "Agregar todos".'],
+  [2,'val','Regla por validar','Se limita a distritos de la DEE original. Para sumar otros distritos se registraría un nuevo decreto.'],
+  [3,'sen','No guardar listas vacías','Hoy "Finalizar" muestra "¿Está seguro que desea guardar los distritos…?" aunque la lista esté vacía (0 of 0), y los dos botones del diálogo pesan igual. Aquí "Siguiente" se deshabilita sin distritos y la confirmación explica sus consecuencias.']
+ ],
+ rectificar:[
+  [1,'inf','Corrección desde el módulo','El informe 4.2 pide facilitar la edición y corrección de registros preservando controles. La rectificación es esa vía, con trazabilidad.'],
+  [2,'sen','Motivo y tipo obligatorios','Fe de erratas, error de registro o modificatoria del D.S., con sustento. Cada rectificación crea una versión y no se pierde la anterior.'],
+  [3,'val','Bloqueo informado (propuesta)','Un distrito con solicitudes asociadas no se quita sin gestionarlas; se indica cuántas. Regla propuesta, por confirmar con OTIC y FONDES.']
+ ]
+};
+
+/* ---------- Wizard (DEE y prórroga) ---------- */
+function mkWiz(mode){
+  const data=mode==='dee'
+   ?{numero:'152',anio:'2026',sector:'PCM',evento:'Impacto de daños',peligro:'Sismo',inicio:'2026-10-16',plazo:'60',url:'https://busquedas.elperuano.pe/dispositivo/NL/ejemplo-ds-152-2026-pcm',nDS:'84'}
+   :{numero:'160',anio:'2026',sector:'PCM',inicio:'2026-12-13',plazo:'',url:'https://busquedas.elperuano.pe/dispositivo/NL/ejemplo-ds-160-2026-pcm',nDS:'84'};
+  const w={mode:mode,step:1,tab:'arbol',sel:new Set(),q:'',data:data,open:new Set(),xl:false,chk:false,done:false,errs:{},univ:mode==='prorroga'?['Amazonas']:null};
+  if(mode==='prorroga')allKeys(w.univ).forEach(k=>w.sel.add(k));
+  return w;
+}
+const getWiz=m=>m==='dee'?(S.wizD=S.wizD||mkWiz('dee')):(S.wizP=S.wizP||mkWiz('prorroga'));
+const curWiz=()=>S.route==='nueva'?S.wizD:(S.route==='prorroga-nueva'?S.wizP:null);
+const titleOf=w=>(w.mode==='dee'?'D.S. N° ':'D.S. N° ')+(w.data.numero||'___')+'-'+w.data.anio+'-'+w.data.sector;
+const termOf=w=>{const p=parseInt(w.data.plazo,10);if(!w.data.inicio||!(p>0))return null;return endOfISO(w.data.inicio,p);};
+const urlOk=u=>{try{const x=new URL(u);return /(^|\.)elperuano\.pe$/.test(x.hostname)||/(^|\.)gob\.pe$/.test(x.hostname);}catch(e){return false;}};
+function validate(w){
+  const e={},d=w.data;
+  if(!/^\d{1,4}$/.test(d.numero||''))e.numero='Ingrese el número del decreto.';
+  if(!d.inicio)e.inicio='Indique la fecha de inicio.';
+  if(!(parseInt(d.plazo,10)>0))e.plazo='Ingrese el plazo en días.';
+  if(!urlOk(d.url||''))e.url='Debe ser un enlace de El Peruano (elperuano.pe) o gob.pe.';
+  if(!(parseInt(d.nDS,10)>0))e.nDS='Ingrese el N° de distritos que indica el D.S.';
+  return e;
+}
+function fieldErr(w,f){return w.errs[f]?`<div class="err" id="err-${f}">${esc(w.errs[f])}</div>`:`<div class="err" id="err-${f}"></div>`;}
+function stepper(w,labels){
+  return `<ol class="stepper" aria-label="Pasos del registro">${labels.map((l,i)=>{const n=i+1;const st=w.step===n?'cur':(w.step>n?'done':'');
+   return `<li class="${st}"><button class="stp" data-act="step" data-n="${n}" ${n>w.step?'disabled':''} ${w.step===n?'aria-current="step"':''}><span class="n">${w.step>n?'✓':n}</span><span>${esc(l)}</span></button></li>`;}).join('')}</ol>`;
+}
+function step1HTML(w){
+  const d=w.data,isD=w.mode==='dee',t=termOf(w);
+  const nErr=Object.keys(w.errs).length;
+  return `<h2>Datos del dispositivo legal ${pin(1)}${isD?pin(6):''}</h2>
+  ${nErr?`<div class="alert a-bad" role="alert"><span>✗</span><span>Revise ${nErr} campo${nErr>1?'s':''} antes de continuar: cada uno indica qué falta.</span></div>`:''}
+  <div class="alert a-info"><span>ℹ</span><span>Datos de ejemplo precargados para la demostración. ${isD?'Registre aquí las DEE publicadas en El Peruano.':'Prórroga de la '+esc(dee('148').num)+'.'}</span></div>
+  <div class="grid g4">
+   <div><label class="l" for="f-tipo">Tipo de norma</label><select class="in" id="f-tipo" disabled><option>Decreto Supremo</option></select></div>
+   <div><label class="l" for="f-numero">Número *</label><input class="in" id="f-numero" data-f="numero" inputmode="numeric" maxlength="4" value="${esc(d.numero)}" ${w.errs.numero?'aria-invalid="true"':''}>${fieldErr(w,'numero')}</div>
+   <div><label class="l" for="f-anio">Año *</label><select class="in" id="f-anio" data-f="anio"><option ${d.anio==='2026'?'selected':''}>2026</option><option ${d.anio==='2025'?'selected':''}>2025</option></select></div>
+   <div><label class="l" for="f-sector">Sector refrendante *</label><select class="in" id="f-sector" data-f="sector"><option ${d.sector==='PCM'?'selected':''}>PCM</option><option ${d.sector==='MINDEF'?'selected':''}>MINDEF</option></select></div>
+  </div>
+  <div class="grid g3" style="margin-top:14px">
+   <div><label class="l" for="f-titulo">Título del registro (automático)</label><input class="in" id="f-titulo" readonly value="${esc(titleOf(w))}"></div>
+   ${isD?`<div><label class="l" for="f-evento">Tipo de evento *</label><select class="in" id="f-evento" data-f="evento">${EVENTOS.map(x=>`<option ${d.evento===x?'selected':''}>${x}</option>`).join('')}</select></div>
+   <div><label class="l" for="f-peligro">Tipo de peligro *</label><select class="in" id="f-peligro" data-f="peligro">${PELIGROS.map(x=>`<option ${d.peligro===x?'selected':''}>${x}</option>`).join('')}</select></div>`
+   :`<div><label class="l">Declaratoria que se prorroga</label><input class="in" readonly value="${esc(dee('148').num)} · Sismo · ${fmt(parseISO(dee('148').inicio))} al ${fmt(endOf(dee('148')))}"></div><div></div>`}
+  </div>
+  <div class="grid g3" style="margin-top:14px">
+   <div><label class="l" for="f-inicio">Fecha de inicio * ${pin(isD?2:1)}</label><input class="in" type="date" id="f-inicio" data-f="inicio" value="${esc(d.inicio)}" ${w.errs.inicio?'aria-invalid="true"':''}>${fieldErr(w,'inicio')}${isD?'':'<div class="hint">Sugerida: día siguiente al término de la DEE (12/12/2026).</div>'}</div>
+   <div><label class="l" for="f-plazo">Plazo (días) * ${isD?'':pin(2)}</label><input class="in" id="f-plazo" data-f="plazo" inputmode="numeric" placeholder="Ej. 60" value="${esc(d.plazo)}" ${w.errs.plazo?'aria-invalid="true"':''}>${fieldErr(w,'plazo')}</div>
+   <div><label class="l" for="f-termino">Fecha de término (calculada)</label><input class="in" id="f-termino" readonly value="${t?fmt(t):'—'}"><div class="hint">Inicio + plazo − 1 día.</div></div>
+  </div>
+  <div class="grid g2" style="margin-top:14px">
+   <div><label class="l" for="f-url">Enlace del decreto en El Peruano * ${isD?pin(3):''}</label><input class="in" id="f-url" data-f="url" value="${esc(d.url)}" ${w.errs.url?'aria-invalid="true"':''}><div class="hint" id="urlok">${urlOk(d.url)?'✓ Dominio reconocido':'Use un enlace de elperuano.pe o gob.pe'}</div>${fieldErr(w,'url')}</div>
+   <div><label class="l" for="f-nDS">N° de distritos según el D.S. * ${isD?pin(4):''}</label><input class="in" id="f-nDS" data-f="nDS" inputmode="numeric" value="${esc(d.nDS)}" ${w.errs.nDS?'aria-invalid="true"':''}><div class="hint">Dato de control para verificar el ámbito cargado. Un D.S. puede incluir cientos de distritos (p. ej. 707).</div>${fieldErr(w,'nDS')}</div>
+  </div>
+  ${isD?`<div class="alert a-warn" style="margin-top:14px"><span>⚠</span><span>${pin(5)} Se verificaría si ya existe una DEE vigente con el mismo peligro y distritos coincidentes (regla por validar).</span></div>`:''}
+  <div class="wizfoot"><button class="btn btn-ghost" data-act="go" data-to="#/${isD?'lista':'prorrogas'}">Cancelar</button><div class="r"><button class="btn btn-ghost" data-act="draft">Guardar avance</button><button class="btn btn-primary" data-act="next">Siguiente: ámbito geográfico →</button></div></div>`;
+}
+function counterHTML(w){
+  const n=w.sel.size,N=parseInt(w.data.nDS,10)||0;let cls='c-off',msg='Ingrese el N° de distritos según el D.S. en el paso 1.',pct=0;
+  if(N>0){pct=Math.min(100,Math.round(n*100/N));
+    if(n===N){cls='c-ok';msg='✓ Coincide con el decreto';}else if(n<N){cls='c-warn';msg='Faltan '+(N-n)+' distrito'+(N-n>1?'s':'')+' respecto al decreto';}else{cls='c-bad';msg='Sobran '+(n-N)+' distrito'+(n-N>1?'s':'')+' respecto al decreto';}}
+  return `<div class="counter ${cls}"><div class="big">${n} <small>/ ${N||'—'} según el D.S.</small></div><div style="margin-top:6px;font-weight:500">${msg}</div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+}
+function panelHTML(w){
+  const g=groupKeys(Array.from(w.sel));const deps=Object.keys(g);
+  const body=deps.length?deps.map(d=>{const ps=Object.keys(g[d]);const tot=ps.reduce((a,p)=>a+g[d][p].length,0);
+   return `<details data-pk="${esc(d)}" ${w.open.has(d)?'open':''}><summary><b>${esc(d)}</b><span class="badge b-off">${tot} distritos</span></summary>${ps.map(p=>`<details class="in2" data-pk="${esc(d+'|'+p)}" ${w.open.has(d+'|'+p)?'open':''}><summary>${esc(p)} <span class="badge b-off">${g[d][p].length}</span></summary><div class="chipw">${g[d][p].map(x=>`<button class="chip" data-act="rm" data-k="${esc(key(d,p,x))}" title="Quitar ${esc(x)}">${esc(x)} ✕</button>`).join('')}</div></details>`).join('')}</details>`;}).join('')
+   :'<p class="muted" style="padding:12px">Aún no hay distritos. Marque departamentos, provincias o distritos, o importe un archivo Excel/CSV.</p>';
+  return `${counterHTML(w)}<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h3 style="margin:0">Ámbito seleccionado ${w.mode==='dee'?pin(5):''}</h3><button class="btn-link" data-act="clear">Limpiar todo</button></div><div class="selbox">${body}</div>`;
+}
+function treeHTML(w){
+  let h='';
+  Object.keys(GEO).forEach(d=>{if(w.univ&&w.univ.indexOf(d)<0)return;
+   h+=`<details class="dep" data-d="${esc(d)}"><summary><input type="checkbox" data-t="d" data-d="${esc(d)}" aria-label="Seleccionar todo ${esc(d)}"><span class="nm">${esc(d)}</span><span class="cnt" data-cnt="d|${esc(d)}"></span></summary><div class="provs">`;
+   Object.keys(GEO[d]).forEach(p=>{
+     h+=`<details class="prov" data-p="${esc(p)}"><summary><input type="checkbox" data-t="p" data-d="${esc(d)}" data-p="${esc(p)}" aria-label="Seleccionar toda la provincia ${esc(p)}"><span class="nm">${esc(p)}</span><span class="cnt" data-cnt="p|${esc(d)}|${esc(p)}"></span></summary><ul class="dists">`;
+     GEO[d][p].forEach(x=>{h+=`<li data-x="${esc(x)}"><label><input type="checkbox" data-t="x" data-d="${esc(d)}" data-p="${esc(p)}" data-x="${esc(x)}"><span class="xn">${esc(x)}</span></label></li>`;});
+     h+='</ul></details>';});
+   h+='</div></details>';});
+  return h;
+}
+function syncTree(w){
+  const tree=$('#tree');if(!tree)return;const cnt={};
+  Object.keys(GEO).forEach(d=>{if(w.univ&&w.univ.indexOf(d)<0)return;let sd=0,td=0;
+    Object.keys(GEO[d]).forEach(p=>{let sp=0;GEO[d][p].forEach(x=>{if(w.sel.has(key(d,p,x)))sp++;});cnt['p|'+d+'|'+p]=[sp,GEO[d][p].length];sd+=sp;td+=GEO[d][p].length;});cnt['d|'+d]=[sd,td];});
+  $$('[data-t]',tree).forEach(i=>{const t=i.dataset.t,d=i.dataset.d,p=i.dataset.p,x=i.dataset.x;
+    if(t==='x'){i.checked=w.sel.has(key(d,p,x));i.indeterminate=false;}
+    else{const c=t==='d'?cnt['d|'+d]:cnt['p|'+d+'|'+p];i.checked=c[0]===c[1]&&c[1]>0;i.indeterminate=c[0]>0&&c[0]<c[1];}});
+  $$('[data-cnt]',tree).forEach(el=>{const c=cnt[el.dataset.cnt];if(!c)return;el.textContent=c[0]+' / '+c[1];el.classList.toggle('full',c[0]===c[1]&&c[1]>0);});
+}
+function filterTree(w){
+  const q=norm(w.q||''),tree=$('#tree');if(!tree)return;
+  $$('details.dep',tree).forEach(dd=>{let anyD=false;
+    $$('details.prov',dd).forEach(pd=>{let anyP=false;
+      $$('li',pd).forEach(li=>{const nm=li.dataset.x,show=!q||norm(nm).indexOf(q)>=0;li.hidden=!show;if(show)anyP=true;
+        const sp=$('.xn',li);sp.innerHTML=q&&show?esc(nm).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','i'),'<mark>$1</mark>'):esc(nm);});
+      pd.hidden=!anyP;if(q&&anyP)pd.open=true;if(anyP)anyD=true;});
+    dd.hidden=!anyD;if(q&&anyD)dd.open=true;});
+}
+function setGroup(w,d,p,on){
+  Object.keys(GEO[d]).forEach(pp=>{if(p&&pp!==p)return;GEO[d][pp].forEach(x=>{const k=key(d,pp,x);if(on)w.sel.add(k);else w.sel.delete(k);});});
+}
+function refreshAmbito(w){syncTree(w);const p=$('#panel');if(p)p.innerHTML=panelHTML(w);const nb=$('#nextbtn');if(nb)nb.disabled=w.sel.size===0;}
+function excelHTML(w){
+  const n=w.sel.size;
+  return `<div class="steps3">
+   <div class="stepbox"><b>1. Descargue la plantilla</b><p class="muted">Columnas: UBIGEO, DEPARTAMENTO, PROVINCIA, DISTRITO. Un ejemplo por fila.</p><button class="btn btn-ghost btn-sm" data-act="tpl">Descargar plantilla (CSV)</button></div>
+   <div class="stepbox"><b>2. Complete el ámbito</b><p class="muted">Puede copiar el anexo del decreto. El ubigeo (6 dígitos) identifica el distrito sin ambigüedad; ej. 010101 = Chachapoyas.</p></div>
+   <div class="stepbox"><b>3. Cargue el archivo</b><p class="muted">Se valida antes de agregar: duplicados, códigos inexistentes y filas vacías.</p></div></div>
+  <div class="dz" style="margin-top:14px">Arrastre aquí su archivo .xlsx o .csv<br><button class="btn btn-ghost btn-sm" style="margin-top:8px" data-act="xl">Simular carga de “ambito_ds148.xlsx” (86 filas)</button></div>
+  ${w.xl?`<div class="kpis"><div class="kpi"><b>86</b>filas leídas</div><div class="kpi"><b style="color:var(--ok)">84</b>válidas</div><div class="kpi"><b style="color:var(--warn)">1</b>duplicada (omitida)</div><div class="kpi"><b style="color:var(--bad)">1</b>inválida (rechazada)</div></div>
+  <div class="tblw"><table class="tbl" style="min-width:560px"><thead><tr><th>Fila</th><th>Dato</th><th>Problema</th><th>Resultado</th></tr></thead><tbody>
+   <tr><td>23</td><td>Amazonas › Bagua › Imaza</td><td>Duplicado de la fila 9</td><td><span class="badge b-warn">Omitida</span></td></tr>
+   <tr><td>71</td><td>UBIGEO 019999</td><td>El código no existe en el catálogo</td><td><span class="badge b-bad">Rechazada</span></td></tr></tbody></table></div>
+  <div style="margin-top:12px"><button class="btn btn-primary" data-act="addxl" ${w.univ&&w.univ.indexOf('Amazonas')<0?'disabled':''}>Agregar 84 válidos al ámbito</button></div>`:''}`;
+}
+function step2HTML(w){
+  const isP=w.mode==='prorroga';
+  const tabs=[['arbol','Seleccionar en lista','list'],['excel','Importar Excel/CSV','upload']];
+  let body='';
+  if(w.tab==='arbol'){
+    body=`<div class="amb"><div><div style="display:flex;gap:8px;margin-bottom:8px"><div style="flex:1"><label class="sr" for="tq">Buscar distrito</label><input class="in" id="tq" placeholder="Buscar distrito, provincia o departamento…" value="${esc(w.q)}"></div><button class="btn btn-ghost btn-sm" data-act="expand">Expandir todo</button><button class="btn btn-ghost btn-sm" data-act="collapse">Contraer</button></div>
+      <div class="tree" id="tree" role="group" aria-label="Departamentos, provincias y distritos">${treeHTML(w)}</div>
+      <p class="hint">Marque un departamento o provincia para incluirlos completos y desmarque los que no correspondan. ${pin(1)} ${pin(2)}</p></div>
+      <div class="sticky" id="panel">${panelHTML(w)}</div></div>`;
+  }else{
+    body=`<div class="amb"><div>${excelHTML(w)}</div><div class="sticky" id="panel">${panelHTML(w)}</div></div><p class="hint">${pin(3)}</p>`;
+  }
+  return `<h2>Ámbito geográfico ${isP?'':pin(4)}</h2>
+  ${isP?`<div class="alert a-info"><span>ℹ</span><span>Se precargó el ámbito de la ${esc(dee('148').num)} (84 distritos). Desmarque lo que no se prorroga. Solo pueden incluirse distritos del decreto original. ${pin(1)}</span></div>`:''}
+  <div class="tabs" role="tablist">${tabs.map(t=>`<button class="tab" role="tab" aria-selected="${w.tab===t[0]}" data-act="tab2" data-v="${t[0]}">${ico(t[2])}${t[1]}</button>`).join('')}</div>
+  ${body}
+  <div class="wizfoot"><button class="btn btn-ghost" data-act="prev">← Atrás</button><div class="r"><button class="btn btn-ghost" data-act="draft">Guardar avance</button>${isP?'':pin(6)}<button class="btn btn-primary" id="nextbtn" data-act="next" ${w.sel.size?'':'disabled'}>Siguiente: revisión →</button></div></div>`;
+}
+function step3HTML(w){
+  const isD=w.mode==='dee',t=termOf(w),n=w.sel.size,N=parseInt(w.data.nDS,10)||0,match=n===N&&n>0;
+  const g=groupKeys(Array.from(w.sel));
+  let rows='',np=0;Object.keys(g).forEach(d=>Object.keys(g[d]).forEach(p=>{np++;rows+=`<tr><td>${esc(d)}</td><td>${esc(p)}</td><td class="r">${g[d][p].length}</td></tr>`;}));
+  const ok=match&&w.chk;
+  return `<h2>Revisión y confirmación ${pin(1)}</h2>
+  <div class="cols2"><div>
+   <dl class="kv"><dt>Dispositivo legal</dt><dd><b>${esc(titleOf(w))}</b></dd>${isD?`<dt>Evento / peligro</dt><dd>${esc(w.data.evento)} · ${esc(w.data.peligro)}</dd>`:`<dt>Prórroga de</dt><dd>${esc(dee('148').num)}</dd>`}
+   <dt>Vigencia</dt><dd>${fmt(parseISO(w.data.inicio))} al ${t?fmt(t):'—'} (${esc(w.data.plazo)} días)</dd><dt>Enlace</dt><dd><a href="${esc(w.data.url)}" onclick="return false">${esc(w.data.url.slice(0,48))}…</a></dd><dt>Ámbito</dt><dd>${Object.keys(g).length} departamento(s) · ${np} provincia(s) · <b>${n} distritos</b></dd></dl>
+   <div style="margin-top:14px">${counterHTML(w)}</div>
+   <h3>Lista de verificación</h3>
+   <ul class="tight" style="list-style:none;padding:0"><li class="rec-ok">✓ Datos del decreto completos y enlace válido</li><li class="rec-ok">✓ Fecha de término calculada: ${t?fmt(t):'—'}</li><li class="${match?'rec-ok':'rec-bad'}">${match?'✓':'✗'} Distritos cargados: ${n} de ${N} según el D.S.</li></ul>
+   <label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" id="chk" ${w.chk?'checked':''}><span>Cotejé este resumen con el anexo del decreto publicado.</span></label></div>
+  <div><h3>Resumen por provincia (para cotejar con el anexo)</h3><div class="tblw"><table class="tbl" style="min-width:300px"><thead><tr><th>Departamento</th><th>Provincia</th><th class="r">Distritos</th></tr></thead><tbody>${rows}<tr><td colspan="2"><b>Total</b></td><td class="r"><b>${n}</b></td></tr></tbody></table></div>
+   <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" data-act="expSel">Exportar ámbito a Excel (CSV)</button></div></div></div>
+  <div class="alert a-warn" style="margin-top:14px"><span>⚠</span><span>${pin(2)} Al confirmar, el registro se bloquea${isD?' y el ámbito queda disponible para otros módulos (p. ej. FONDES)':''} ${pin(3)}. Cualquier cambio posterior se hará mediante una <b>rectificación</b> con motivo, que queda en el historial.</span></div>
+  <div class="wizfoot"><button class="btn btn-ghost" data-act="prev">← Atrás</button><div class="r"><button class="btn btn-ghost" data-act="draft">Guardar avance</button><button class="btn btn-primary" id="confbtn" data-act="confirm" ${ok?'':'disabled'}>Confirmar registro</button></div></div>
+  ${match?'':'<p class="err" style="text-align:right">No se puede confirmar mientras el ámbito no coincida con el N° de distritos del decreto. Corrija el ámbito o el dato de control.</p>'}`;
+}
+function wizView(mode){
+  const w=getWiz(mode),isD=mode==='dee';
+  if(w.done)return pageHead(isD?'Registro confirmado':'Prórroga registrada',['Declaratoria de estado de emergencia',isD?'Nueva declaratoria':'Nueva prórroga'],'')+
+   `<section class="card"><div class="empty"><svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="26" fill="#DDF3E4"/><path d="M17 29l8 8 14-16" fill="none" stroke="#14632D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>${esc(titleOf(w))} confirmado${isD?'':' (prórroga)'}</h3><p>${w.sel.size} distritos registrados. El historial muestra quién confirmó y cuándo.</p>
+   <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px"><button class="btn btn-primary" data-act="go" data-to="${isD?'#/consulta/nuevo':'#/prorrogas'}">${isD?'Ver la declaratoria':'Ver lista de prórrogas'}</button><button class="btn btn-ghost" data-act="go" data-to="#/lista">Ir a la lista</button></div></div></section>`;
+  const labels=['Datos del decreto','Ámbito geográfico','Revisión y confirmación'];
+  const body=w.step===1?step1HTML(w):(w.step===2?step2HTML(w):step3HTML(w));
+  return pageHead(isD?'Nueva declaratoria de estado de emergencia':'Nueva prórroga de '+esc(dee('148').num),['Declaratoria de estado de emergencia',isD?'Nueva declaratoria':'Prórrogas','Nuevo registro'],'')+stepper(w,labels)+`<section class="card">${body}</section>`;
+}
+
+/* ---------- Pantallas ---------- */
+function resumenView(){
+  const go=(t,l)=>`<button class="btn-link" data-act="go" data-to="${t}">${l}</button>`;
+  return `<div class="hero"><h1>Módulo DEE — SINPAD: propuesta de optimización</h1><p>Mockup navegable con datos de ejemplo. Responde al Informe Técnico N° 002556-2026-INDECI/DIREH (registro del ámbito geográfico de las Declaratorias de Estado de Emergencia) y suma mejoras de criterio técnico sobre otras pantallas del módulo.</p></div>
+  <div class="cols2" style="margin-top:16px">
+   <section class="card"><h2>Lo que entendimos del informe</h2><ul class="tight">
+    <li>DIREH registra cada nuevo D.S. y sus prórrogas, incluido el <b>ámbito</b> (departamentos, provincias y distritos).</li>
+    <li>Hoy se elige distrito por distrito: un D.S. de <b>707 distritos</b> puede tomar una jornada o más y aumenta el riesgo de omisiones.</li>
+    <li>La alternativa actual (elegir la provincia y borrar lo que sobra) falla cuando hay distritos que el usuario <b>no puede eliminar</b>: se pide corrección por correo a OTIC.</li>
+    <li>El retraso afecta al módulo <b>FONDES</b>: sin ámbito no se pueden registrar solicitudes de intervención.</li>
+    <li>Se pide a OTIC reducir operaciones manuales, facilitar edición y corrección y <b>preservar los controles</b> de correspondencia con el D.S.</li></ul></section>
+   <section class="card"><h2>Recorrido sugerido (7 minutos)</h2><ol class="tight">
+    <li>${go('#/lista','Lista de declaratorias')}: estado de declaratoria y de registro; registro pendiente de 707 distritos.</li>
+    <li>${go('#/nueva','Nueva declaratoria')} → datos con término calculado.</li>
+    <li>Paso 2: marcar <b>Amazonas</b> (84) y excluir un distrito; probar también <b>Importar Excel</b>.</li>
+    <li>Paso 3: contador contra el D.S., cotejo y confirmación.</li>
+    <li>${go('#/consulta/148','Consulta')}: ámbito agrupado, historial.</li>
+    <li>${go('#/rectificar','Rectificación')}: corrección con motivo y bloqueo informado.</li>
+    <li>${go('#/prorrogas','Prórrogas')} y ${go('#/prorroga-nueva','nueva prórroga')} con ámbito precargado.</li></ol></section></div>
+  <section class="card"><h2>Qué pide el informe y cómo se resuelve</h2><div class="tblw"><table class="tbl matrix" style="min-width:760px"><thead><tr><th>Pedido del informe (2.4)</th><th>Propuesta</th><th>Pantalla</th></tr></thead><tbody>
+   <tr><td>Incorporación masiva por archivo estructurado</td><td>Plantilla por ubigeo, vista previa, reporte de errores (duplicados, códigos inexistentes).</td><td>${go('#/nueva','Paso 2 · Importar')}</td></tr>
+   <tr><td>Selección múltiple de departamentos, provincias y distritos</td><td>Árbol con casillas de tres estados, búsqueda y contadores; panel con lo seleccionado.</td><td>${go('#/nueva','Paso 2 · Lista')}</td></tr>
+   <tr><td>Selección total por provincia con exclusión directa</td><td>Marcar provincia y desmarcar los sobrantes, sin pasar por “agregar todos y luego eliminar”.</td><td>${go('#/nueva','Paso 2')}</td></tr>
+   <tr><td>Edición y eliminación directa antes de la validación definitiva</td><td>Registro pendiente editable y retomable; tras confirmar, rectificación controlada con motivo.</td><td>${go('#/lista','Lista')} · ${go('#/rectificar','Rectificación')}</td></tr>
+   <tr><td>Validaciones de duplicidad u omisión</td><td>Duplicado imposible por diseño; omisiones por contador contra el N° de distritos del D.S.</td><td>${go('#/nueva','Pasos 2 y 3')}</td></tr>
+   <tr><td>Correspondencia entre el ámbito registrado y el D.S.</td><td>Cotejo por provincia, checklist y exportación para el expediente.</td><td>${go('#/nueva','Paso 3')}</td></tr></tbody></table></div></section>
+  <div class="cols2" style="margin-top:16px">
+   <section class="card"><h2>Mejoras por criterio técnico (otras pantallas)</h2><ul class="tight">
+    <li>Estado de declaratoria (Vigente/Finalizado) separado del estado de registro (Pendiente/Confirmado) (hoy un registro pendiente aparece “VIGENTE”).</li>
+    <li>Fecha de término <b>derivada</b>, sin plazo por defecto; decreto estructurado y URL validada.</li>
+    <li>Prórroga con inicio sugerido y ámbito precargado; lista con contexto y estado vacío útil.</li>
+    <li>Consulta con ámbito agrupado, exportación e historial de auditoría.</li>
+    <li>Acciones según estado; botones consistentes; textos y paginador en español; contraste AA.</li></ul></section>
+   <section class="card"><h2>Supuestos por validar</h2><ul class="tight">
+    <li>Causa exacta de “no se pueden eliminar” (registro confirmado, datos asociados en FONDES o falla).</li>
+    <li>Si FONDES lee solo ámbito confirmado o también registros pendientes.</li>
+    <li>Reglas de prórroga: momento permitido, cantidad, actualización del término.</li>
+    <li>Catálogo de ubigeo vigente en SINPAD y modelo de datos del DEE.</li>
+    <li>Tope de plazo por tipo de evento según el reglamento.</li></ul>
+    <p class="muted" style="margin-top:10px"><b>Fases:</b> 1) lo que pide el informe (selector, carga masiva, avance parcial, control de integridad); 2) estados, rectificación y consistencia de UI; 3) mapa, avisos y doble confirmación opcional.</p></section></div>`;
+}
+function rowActs(d){
+  const v=vig(d);let primary='',items='';
+  if(d.registro==='Pendiente'){primary=`<button class="btn btn-primary btn-sm" data-act="go" data-to="#/nueva" data-step="2">Continuar registro</button>`;
+    const falta=d.nDS-d.cargados;
+    items=`<button data-act="go" data-to="#/nueva" data-step="1">Editar datos</button><button data-act="go" data-to="#/nueva" data-step="2">Habilitar distritos</button><button ${falta>0?'disabled title="Faltan '+falta+' distritos respecto al decreto"':'data-act="go" data-to="#/nueva" data-step="3"'}>Confirmar registro${falta>0?' <span class="muted" style="font-size:12px">(faltan '+falta+')</span>':''}</button><button data-act="toast" data-msg="Abriría el PDF (ejemplo)">Ver PDF</button><hr><button class="danger" data-act="toast" data-msg="Anular registro pendiente: pediría motivo (ejemplo)">Anular registro pendiente…</button>`;}
+  else{primary=`<button class="btn btn-ghost btn-sm" data-act="go" data-to="#/consulta/${d.id}">Consultar</button>`;
+    items=`<button data-act="go" data-to="#/prorrogas">Prórrogas (${d.prorrogas})</button>`+(v.k!=='off'?`<button data-act="go" data-to="#/rectificar">Solicitar rectificación</button>`:'')+`<hr><button data-act="toast" data-msg="Ámbito exportado a Excel (ejemplo)">Exportar ámbito</button><button data-act="toast" data-msg="Abriría el PDF (ejemplo)">Ver PDF</button>`;}
+  return `<div class="acts">${primary}<button class="kebab" data-act="menu" aria-label="Más acciones" aria-haspopup="true">⋮</button><div class="menu" hidden>${items}</div></div>`;
+}
+function rowsHTML(){
+  const f=S.f,q=norm(f.q);
+  const list=DEES.slice().concat(S.prList.length?[]:[]).filter(d=>{const v=vig(d);
+    if(q&&norm(d.num).indexOf(q)<0)return false;
+    if(f.vig&&v.k!==f.vig)return false;
+    if(f.reg&&d.registro!==f.reg)return false;
+    if(f.pel&&d.peligro!==f.pel)return false;
+    if(f.chip==='vig'&&v.k!=='ok')return false;
+    if(f.chip==='draft'&&d.registro!=='Pendiente')return false;
+    return true;});
+  if(!list.length)return `<tr><td colspan="7"><div class="empty"><h3>Sin resultados</h3><p>Pruebe con otros filtros.</p></div></td></tr>`;
+  return list.map(d=>{const v=vig(d),t=endOf(d);
+   const dist=d.registro==='Pendiente'?`<b>${d.cargados}</b> / ${d.nDS}<div class="mini"><i style="width:${Math.round(d.cargados*100/d.nDS)}%"></i></div>`:`<b>${d.ambito?d.ambito.length:d.nDS}</b>`;
+   return `<tr><td><b>${esc(d.num)}</b></td><td>${esc(d.evento)}<div class="sub">${esc(d.peligro)}</div></td><td>${fmt(parseISO(d.inicio))} → ${fmt(t)}<div class="sub">${d.plazo} días</div></td><td>${dist}</td><td>${vigBadge(v)}${v.soon?`<div class="sub">${v.soon}</div>`:''}${d.prorrogas?`<div class="sub">${d.prorrogas} prórroga${d.prorrogas>1?'s':''}</div>`:''}</td><td>${regBadge(d)}</td><td class="r">${rowActs(d)}</td></tr>`;}).join('');
+}
+function listaView(){
+  const cnt={vig:0,draft:0};DEES.forEach(d=>{const v=vig(d);if(v.k==='ok')cnt.vig++;if(d.registro==='Pendiente')cnt.draft++;});
+  const chip=(v,l)=>`<button class="fchip" data-act="chip" data-v="${v}" aria-pressed="${S.f.chip===v}">${l}</button>`;
+  return pageHead('Declaratorias de estado de emergencia',['Declaratoria de estado de emergencia','Declaratorias'],'<button class="btn btn-primary" data-act="go" data-to="#/nueva" data-reset="D">+ Nueva declaratoria</button>')+
+  `<section class="card"><div class="chips">${chip('','Todas')}${chip('vig','Vigentes ('+cnt.vig+')')}${chip('draft','Pendientes ('+cnt.draft+')')}</div>
+  <div class="filters"><div><label class="l" for="fq">Buscar decreto</label><input class="in" id="fq" data-fl="q" placeholder="Ej. 148-2026" value="${esc(S.f.q)}"></div>
+   <div><label class="l" for="fv">Estado de declaratoria</label><select class="in" id="fv" data-fl="vig"><option value="">Todas</option><option value="ok" ${S.f.vig==='ok'?'selected':''}>Vigente</option><option value="off" ${S.f.vig==='off'?'selected':''}>Finalizado</option></select></div>
+   <div><label class="l" for="fr">Estado de registro</label><select class="in" id="fr" data-fl="reg"><option value="">Todos</option><option ${S.f.reg==='Pendiente'?'selected':''}>Pendiente</option><option ${S.f.reg==='Confirmado'?'selected':''}>Confirmado</option></select></div>
+   <div><label class="l" for="fp">Peligro</label><select class="in" id="fp" data-fl="pel"><option value="">Todos</option>${PELIGROS.map(p=>`<option ${S.f.pel===p?'selected':''}>${p}</option>`).join('')}</select></div>
+   <button class="btn btn-ghost" data-act="fclear">Limpiar</button></div>
+  <div class="tblw"><table class="tbl" style="min-width:700px"><thead><tr><th>Dispositivo legal</th><th>Evento / peligro</th><th>Período ${pin(3)}</th><th>Distritos ${pin(4)}</th><th>Estado de declaratoria ${pin(2)}</th><th>Estado de registro ${pin(1)}</th><th class="r">Acciones ${pin(5)}</th></tr></thead><tbody id="rows">${rowsHTML()}</tbody></table></div>
+  <div class="pager"><span>Mostrando ${DEES.length} registros de ejemplo ${pin(6)}</span><span>Filas por página: 10 · Página 1 de 1</span></div></section>`;
+}
+function ambitoRO(keys,q){
+  const g=groupKeys(keys),nq=norm(q||'');
+  return Object.keys(g).map(d=>`<details open><summary><b>${esc(d)}</b> <span class="badge b-off">${Object.keys(g[d]).reduce((a,p)=>a+g[d][p].length,0)} distritos</span></summary>${Object.keys(g[d]).map(p=>`<details class="in2" ${nq?'open':''}><summary>${esc(p)} <span class="badge b-off">${g[d][p].length}</span></summary><div class="chipw">${g[d][p].map(x=>`<span class="chip ro" data-n="${esc(norm(x+' '+p))}">${esc(x)}</span>`).join('')}</div></details>`).join('')}</details>`).join('');
+}
+function consultaView(id){
+  const d=id==='nuevo'&&S.created?S.created:dee(id);const v=vig(d),e=endOf(d);
+  const total=d.plazo,elapsed=Math.max(0,Math.min(total,diffDays(parseISO(d.inicio),HOY)+1)),pct=Math.round(elapsed*100/total);
+  const tabs=[['resumen','Resumen','info'],['ambito','Ámbito geográfico ('+(d.ambito?d.ambito.length:d.nDS)+')','map'],['pro','Prórrogas ('+d.prorrogas+')','refresh'],['hist','Historial','clock']];
+  let body='';
+  if(S.ctab==='resumen'){
+    body=`<dl class="kv"><dt>Tipo de evento</dt><dd>${esc(d.evento)}</dd><dt>Tipo de peligro</dt><dd>${esc(d.peligro)}</dd><dt>Inicio</dt><dd>${fmt(parseISO(d.inicio))}</dd><dt>Término</dt><dd>${fmt(e)}</dd><dt>Plazo</dt><dd>${d.plazo} días</dd><dt>Publicación</dt><dd>${d.url?`<a href="${esc(d.url)}" onclick="return false">Ver en El Peruano ↗</a> ${pin(5)}`:'—'}</dd><dt>Registro</dt><dd>${regBadge(d)} versión ${d.ver||1}</dd></dl>
+    <div class="tl"><div class="track" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Avance de la vigencia"><i style="width:${pct}%"></i></div><div class="ends"><span>${fmt(parseISO(d.inicio))}</span><span>Hoy: día ${elapsed} de ${total}${v.left>=0?' · quedan '+v.left+' días':''}</span><span>${fmt(e)}</span></div></div>`;
+  }else if(S.ctab==='ambito'){
+    body=d.ambito?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center"><div style="flex:1;min-width:220px"><label class="sr" for="cq">Buscar distrito</label><input class="in" id="cq" placeholder="Buscar distrito o provincia…"></div><button class="btn btn-ghost" data-act="expAmb" data-id="${d.id}">Exportar a Excel (CSV)</button></div>
+      <div class="kpis"><div class="kpi"><b>${new Set(d.ambito.map(k=>k.split('|')[0])).size}</b>departamento(s)</div><div class="kpi"><b>${new Set(d.ambito.map(k=>k.split('|').slice(0,2).join('|'))).size}</b>provincias</div><div class="kpi"><b>${d.ambito.length}</b>distritos</div><div class="kpi"><b>${d.nDS}</b>según el D.S.</div></div>
+      <div class="selbox" id="ambro" style="max-height:none">${ambitoRO(d.ambito)}</div>`
+     :`<div class="alert a-info"><span>ℹ</span><span>En este mockup solo la ${esc(dee('148').num)} y las declaratorias que usted registre tienen detalle de ámbito.</span></div>`;
+  }else if(S.ctab==='pro'){
+    body=`<div class="empty"><h3>${d.prorrogas?d.prorrogas+' prórroga(s) registrada(s)':'Sin prórrogas'}</h3><p>${d.prorrogas?'Consulte el detalle en la lista de prórrogas.':'Esta declaratoria aún no tiene prórrogas.'}</p><button class="btn btn-ghost" data-act="go" data-to="#/prorrogas">Ir a prórrogas</button></div>`;
+  }else{
+    const h=d.hist||[['16/10/2026 10:30','Usuario DIREH (ejemplo)','Confirmó el registro','Versión 1']];
+    body=`<div class="tblw"><table class="tbl" style="min-width:600px"><thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Acción</th><th>Detalle</th></tr></thead><tbody>${h.slice().reverse().map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td><b>${esc(r[2])}</b></td><td>${esc(r[3])}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  return pageHead(esc(d.num),['Declaratoria de estado de emergencia','Declaratorias','Consulta'],'')+
+  `<section class="card"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${vigBadge(v)} ${regBadge(d)} <span class="muted">${esc(d.evento)} · ${esc(d.peligro)}</span> ${pin(2)}</div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" data-act="go" data-to="#/prorroga-nueva" data-reset="P">Registrar prórroga</button><button class="btn btn-ghost" data-act="go" data-to="#/rectificar">Solicitar rectificación ${pin(4)}</button><button class="btn btn-ghost" data-act="toast" data-msg="Abriría el PDF (ejemplo)">Ver PDF</button></div></div>
+  <div class="tabs" role="tablist"><span class="tabl">Datos:</span>${tabs.map(t=>`<button class="tab" role="tab" aria-selected="${S.ctab===t[0]}" data-act="ctab" data-v="${t[0]}">${ico(t[2])}${t[1]}${t[0]==='ambito'?' '+pin(1):''}${t[0]==='hist'?' '+pin(3):''}</button>`).join('')}</div>${body}</section>`;
+}
+function prorrogasView(){
+  const d=dee('148'),v=vig(d);
+  const sample=S.demoPr?[{n:'D.S. N° 160-2026-PCM',i:'2026-12-13',p:60,nd:84,s:'Confirmado'},{n:'D.S. N° 171-2027-PCM',i:'2027-02-11',p:30,nd:61,s:'Pendiente'}]:[];
+  const rows=sample.concat(S.prList);
+  const table=rows.length?`<div class="tblw"><table class="tbl" style="min-width:700px"><thead><tr><th>Dispositivo legal</th><th>Inicio</th><th>Término</th><th>Plazo</th><th>Distritos</th><th>Situación</th><th class="r">Acciones</th></tr></thead><tbody>${rows.map(r=>`<tr><td><b>${esc(r.n)}</b></td><td>${fmt(parseISO(r.i))}</td><td>${fmt(endOfISO(r.i,r.p))}</td><td>${r.p} días</td><td>${r.nd}</td><td><span class="badge ${r.s==='Confirmado'?'b-conf':'b-draft'}">${r.s==='Confirmado'?'✓ ':''}${r.s}</span></td><td class="r"><button class="btn btn-ghost btn-sm" data-act="toast" data-msg="${r.s==='Pendiente'?'Editaría la prórroga (ejemplo)':'Consultaría la prórroga (ejemplo)'}">${r.s==='Pendiente'?'Continuar':'Consultar'}</button></td></tr>`).join('')}</tbody></table></div>`
+  :`<div class="empty"><svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="12" width="44" height="40" rx="6" fill="#ECEFF3"/><path d="M20 26h24M20 34h16M20 42h10" stroke="#98A2B3" stroke-width="3" stroke-linecap="round"/></svg><h3>Esta declaratoria aún no tiene prórrogas</h3><p>Registre una prórroga cuando se publique el decreto que amplía el plazo. El inicio se sugerirá automáticamente (13/12/2026) y el ámbito se precargará.</p><button class="btn btn-primary" data-act="go" data-to="#/prorroga-nueva" data-reset="P">+ Registrar prórroga</button> ${pin(2)}</div>`;
+  return pageHead('Prórrogas de '+esc(d.num),['Declaratoria de estado de emergencia',d.num,'Prórrogas'],'<button class="btn btn-primary" data-act="go" data-to="#/prorroga-nueva" data-reset="P">+ Nueva prórroga</button>')+
+  `<section class="card"><div class="alert a-info" style="align-items:center"><span>ℹ</span><span>${pin(1)} <b>${esc(d.num)}</b> · ${esc(d.peligro)} · ${vigBadge(v)} · vigente hasta ${fmt(endOf(d))} · ${d.ambito.length} distritos</span></div>
+   <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap"><button class="tbtn" data-act="demoPr" aria-pressed="${S.demoPr}">Ver con datos de ejemplo</button><span class="muted">Botón solo para la demostración. ${pin(3)} ${pin(4)}</span></div>${table}
+   <div style="margin-top:14px"><button class="btn btn-ghost" data-act="go" data-to="#/consulta/148">← Volver a la declaratoria</button></div></section>`;
+}
+function rectView(){
+  const d=dee('148'),R=S.rect;
+  const items=R.items.map((k,i)=>{const a=k.split('|'),f=FONDES[k];return `<tr><td>${esc(a[2])}</td><td>${esc(a[1])}</td><td>Quitar del ámbito</td><td>${f?`<span class="rec-bad">✗ ${f} solicitud${f>1?'es':''} FONDES asociada${f>1?'s':''}: no puede quitarse sin gestionarlas</span>`:'<span class="rec-ok">✓ Sin solicitudes asociadas</span>'}</td><td><button class="btn-link" data-act="rmrect" data-i="${i}">Quitar de la lista</button></td></tr>`;}).join('');
+  const blocked=R.items.some(k=>FONDES[k]);
+  const can=R.tipo&&R.motivo.trim().length>=20&&R.items.length>0&&!blocked;
+  const opts=d.ambito.filter(k=>R.items.indexOf(k)<0).map(k=>{const a=k.split('|');return `<option value="${esc(k)}">${esc(a[2])} (${esc(a[1])})</option>`;}).join('');
+  return pageHead('Solicitar rectificación — '+esc(d.num),['Declaratoria de estado de emergencia',d.num,'Rectificación'],'')+
+  `<section class="card"><div class="alert a-warn"><span>⚠</span><span>${pin(1)} El registro está <b>confirmado</b> (versión ${d.ver}). Los cambios requieren motivo y generan una nueva versión; la anterior se conserva en el historial.</span></div>
+   <div class="grid g2"><div><label class="l" for="rt">Tipo de rectificación * ${pin(2)}</label><select class="in" id="rt" data-rf="tipo"><option value="">Seleccione…</option><option ${R.tipo==='Fe de erratas del D.S.'?'selected':''}>Fe de erratas del D.S.</option><option ${R.tipo==='Error de registro'?'selected':''}>Error de registro</option><option ${R.tipo==='Modificatoria del D.S.'?'selected':''}>Modificatoria del D.S.</option></select></div>
+   <div><label class="l" for="rs">Sustento (enlace o adjunto)</label><input class="in" id="rs" placeholder="Enlace a la fe de erratas o adjunte el PDF"></div></div>
+   <div style="margin-top:14px"><label class="l" for="rm">Motivo * (mínimo 20 caracteres)</label><textarea class="in" id="rm" data-rf="motivo" rows="3" placeholder="Describa qué se corrige y por qué">${esc(R.motivo)}</textarea></div>
+   <h3 style="margin-top:18px">Distritos afectados ${pin(3)}</h3>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><div style="min-width:260px;flex:1"><label class="sr" for="rd">Distrito a quitar</label><select class="in" id="rd"><option value="">Seleccione un distrito del ámbito…</option>${opts}</select></div><button class="btn btn-ghost" data-act="addrect">Agregar a la rectificación</button><span class="muted" style="align-self:center">Pruebe con “Imaza” y con “La Peca”.</span></div>
+   ${R.items.length?`<div class="tblw"><table class="tbl" style="min-width:680px"><thead><tr><th>Distrito</th><th>Provincia</th><th>Efecto</th><th>Verificación</th><th></th></tr></thead><tbody>${items}</tbody></table></div>`:'<p class="muted">Aún no se agregó ningún distrito.</p>'}
+   <div class="wizfoot"><button class="btn btn-ghost" data-act="go" data-to="#/consulta/148">Cancelar</button><button class="btn btn-primary" data-act="sendrect" ${can?'':'disabled'}>Registrar rectificación</button></div></section>`;
+}
+
+/* ---------- Router y render ---------- */
+const ROUTES={resumen:'Resumen de la propuesta',lista:'Declaratorias',nueva:'Nueva declaratoria','consulta':'Consulta de declaratoria',prorrogas:'Prórrogas','prorroga-nueva':'Nueva prórroga',rectificar:'Rectificación'};
+function navHTML(r){
+  const it=(h,l,k,ic,sub)=>`<a href="${h}" class="${sub?'sub ':''}${r===k?'on':''}">${ic?ico(ic):''}${l}</a>`;
+  const g1=['lista','nueva'].indexOf(r)>=0,g2=['consulta','prorrogas','prorroga-nueva','rectificar'].indexOf(r)>=0;
+  return it('#/resumen','Resumen de la propuesta','resumen','star')+
+  `<div class="grp ${g1?'open':''}">${ico('doc')}<span>Declaratoria de estado de emergencia</span><span class="chev">${IC.chev}</span></div>`+
+  it('#/lista','Declaratorias','lista','',1)+`<a href="#/nueva" data-reset="D" class="sub ${r==='nueva'?'on':''}">Nueva declaratoria</a>`+
+  `<div class="grp ${g2?'open':''}">${ico('folder')}<span>Otras pantallas</span><span class="chev">${IC.chev}</span></div>`+
+  it('#/consulta/148','Consulta de declaratoria','consulta','',1)+it('#/prorrogas','Prórrogas','prorrogas','',1)+`<a href="#/prorroga-nueva" data-reset="P" class="sub ${r==='prorroga-nueva'?'on':''}">Nueva prórroga</a>`+it('#/rectificar','Rectificación','rectificar','',1);
+}
+function notesKey(r,w){if(r==='nueva')return 'nueva-'+w.step;if(r==='prorroga-nueva')return w.step===1?'prorroga-1':(w.step===2?'prorroga-2':'nueva-3');return r;}
+function renderNotes(r){
+  const w=curWiz(),k=notesKey(r,w||{}),list=NOTES[k]||[];
+  const tag={inf:['Informe','s-inf'],sen:['Criterio senior','s-sen'],val:['Por validar','s-val']};
+  const done=w&&w.done;
+  $('#notes').innerHTML=`<h2>Notas de diseño</h2><p class="muted" style="font-size:12px">${list.length&&!done?'Lo que pide el <b>informe técnico</b> y lo que mejoramos por <b>criterio senior</b> en esta pantalla.':'Sin notas para esta vista.'}</p>`+(done?'':list.map(n=>`<div class="note" data-note="${n[0]}"><div class="hd"><span class="num">${n[0]}</span>${esc(n[2])}<span class="src ${tag[n[1]][1]}">${tag[n[1]][0]}</span></div><p>${esc(n[3])}</p></div>`).join(''));
+  const has=list.length>0&&!done;$('#app').classList.toggle('notes-open',S.notesOpen&&has);$('#btnNotes').hidden=!has;$('#btnNotes').setAttribute('aria-pressed',String(S.notesOpen));
+}
+function render(keepScroll){
+  const h=location.hash.replace(/^#\/?/,'')||'resumen';const parts=h.split('/');const r=parts[0];
+  S.route=ROUTES[r]?r:'resumen';
+  let html='';
+  switch(S.route){
+   case 'resumen':html=resumenView();break;
+   case 'lista':html=listaView();break;
+   case 'nueva':html=wizView('dee');break;
+   case 'prorroga-nueva':html=wizView('prorroga');break;
+   case 'consulta':html=consultaView(parts[1]||'148');break;
+   case 'prorrogas':html=prorrogasView();break;
+   case 'rectificar':html=rectView();break;
+  }
+  const v=$('#view');v.innerHTML=html;$('#nav').innerHTML=navHTML(S.route);
+  document.title=(ROUTES[S.route])+' · Mockup DEE SINPAD';
+  renderNotes(S.route);
+  const w=curWiz();
+  if(w&&!w.done&&w.step===2&&w.tab==='arbol'){syncTree(w);filterTree(w);}
+  if(!keepScroll){window.scrollTo(0,0);}
+  $('#side').classList.remove('open');
+}
+window.addEventListener('hashchange',()=>{S.ctab='resumen';render();v_focus();});
+function v_focus(){try{$('#view').focus({preventScroll:true});}catch(e){}}
+
+/* ---------- Eventos ---------- */
+function closeMenus(){$$('.menu').forEach(m=>m.hidden=true);}
+document.addEventListener('click',e=>{
+  const reset=e.target.closest('[data-reset]');if(reset){const r=reset.dataset.reset;if(r==='D')S.wizD=null;if(r==='P')S.wizP=null;}
+  const el=e.target.closest('[data-act]');
+  if(!el){closeMenus();return;}
+  const a=el.dataset.act,w=curWiz();
+  if(a!=='menu')closeMenus();
+  switch(a){
+   case 'go':{if(el.dataset.reset==='D')S.wizD=null;if(el.dataset.reset==='P')S.wizP=null;
+     if(el.dataset.step&&el.dataset.to==='#/nueva'){const nw=getWiz('dee');nw.data.numero='151';nw.data.nDS='707';nw.step=+el.dataset.step||2;}
+     const t=el.dataset.to;if(location.hash===t)render();else location.hash=t;break;}
+   case 'burger':if(window.innerWidth>900)$('#app').classList.toggle('side-off');else $('#side').classList.toggle('open');break;
+   case 'notes':S.notesOpen=!S.notesOpen;renderNotes(S.route);break;
+   case 'pins':S.pins=!S.pins;document.body.classList.toggle('nopins',!S.pins);el.setAttribute('aria-pressed',String(S.pins));break;
+   case 'pin':{S.notesOpen=true;renderNotes(S.route);const n=$('.note[data-note="'+el.dataset.n+'"]');if(n){n.scrollIntoView({block:'center',behavior:'smooth'});n.classList.remove('flash');void n.offsetWidth;n.classList.add('flash');}break;}
+   case 'reset':location.hash='#/resumen';location.reload();break;
+   case 'toast':toast(el.dataset.msg);break;
+   case 'menu':{const m=$('.menu',el.parentNode),wasHidden=m.hidden;closeMenus();m.hidden=!wasHidden;e.stopPropagation();break;}
+   case 'chip':S.f.chip=el.dataset.v;render(true);break;
+   case 'fclear':S.f={q:'',vig:'',reg:'',pel:'',chip:''};render(true);break;
+   case 'ctab':S.ctab=el.dataset.v;render(true);break;
+   case 'demoPr':S.demoPr=!S.demoPr;render(true);break;
+   case 'expAmb':{const d=dee(el.dataset.id);download('ambito-'+d.id+'.csv',csvOf(d.ambito));break;}
+   case 'step':if(w){w.step=+el.dataset.n;render();}break;
+   case 'prev':if(w){w.step=Math.max(1,w.step-1);render();}break;
+   case 'next':if(w){
+      if(w.step===1){w.errs=validate(w);if(Object.keys(w.errs).length){render(true);const first=$('[aria-invalid="true"]');if(first)first.focus();return;}w.step=2;render();}
+      else if(w.step===2){w.step=3;render();}}break;
+   case 'draft':toast('Avance guardado (ejemplo). Podrá retomarlo desde la lista.');break;
+   case 'tab2':if(w){w.tab=el.dataset.v;render(true);}break;
+   case 'expand':$$('#tree details').forEach(x=>x.open=true);break;
+   case 'collapse':$$('#tree details').forEach(x=>x.open=false);break;
+   case 'rm':if(w){w.sel.delete(el.dataset.k);refreshAmbito(w);}break;
+   case 'clear':if(w&&w.sel.size&&window.confirm('¿Quitar los '+w.sel.size+' distritos seleccionados?')){w.sel.clear();refreshAmbito(w);}break;
+   case 'tpl':download('plantilla-ambito-dee.csv','UBIGEO,DEPARTAMENTO,PROVINCIA,DISTRITO\n010101,Amazonas,Chachapoyas,Chachapoyas');break;
+   case 'xl':if(w){w.xl=true;render(true);}break;
+   case 'addxl':if(w){allKeys(['Amazonas']).forEach(k=>w.sel.add(k));refreshAmbito(w);toast('84 distritos agregados desde el archivo');}break;
+   case 'expSel':if(w)download('ambito-seleccionado.csv',csvOf(Array.from(w.sel)));break;
+   case 'confirm':if(w&&!el.disabled)openConfirm(w);break;
+   case 'addrect':{const sel=$('#rd');if(sel.value){S.rect.items.push(sel.value);render(true);}break;}
+   case 'rmrect':S.rect.items.splice(+el.dataset.i,1);render(true);break;
+   case 'sendrect':{const d=dee('148');S.rect.items.forEach(k=>{const i=d.ambito.indexOf(k);if(i>=0)d.ambito.splice(i,1);});d.nDS=d.ambito.length;d.ver=(d.ver||1)+1;
+      d.hist.push([fmt(HOY)+' 11:15','Usuario DIREH (ejemplo)','Rectificó el registro',S.rect.tipo+' · quitó '+S.rect.items.length+' distrito(s) · versión '+d.ver+' · motivo: '+S.rect.motivo.trim().slice(0,60)]);
+      S.rect={items:[],tipo:'',motivo:''};S.ctab='hist';toast('Rectificación registrada. Versión '+d.ver+'.');location.hash='#/consulta/148';break;}
+  }
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenus();const m=$('#modal');if(m)m.remove();}});
+document.addEventListener('input',e=>{
+  const el=e.target,w=curWiz();
+  if(el.dataset.f&&w){w.data[el.dataset.f]=el.value;
+    if(w.errs[el.dataset.f]){delete w.errs[el.dataset.f];el.removeAttribute('aria-invalid');const er=$('#err-'+el.dataset.f);if(er)er.textContent='';}
+    const t=termOf(w);const te=$('#f-termino');if(te)te.value=t?fmt(t):'—';const ti=$('#f-titulo');if(ti)ti.value=titleOf(w);
+    const uo=$('#urlok');if(uo)uo.textContent=urlOk(w.data.url)?'✓ Dominio reconocido':'Use un enlace de elperuano.pe o gob.pe';}
+  else if(el.id==='tq'&&w){w.q=el.value;filterTree(w);}
+  else if(el.id==='cq'){const nq=norm(el.value);$$('#ambro .chip').forEach(c=>{c.hidden=nq&&c.dataset.n.indexOf(nq)<0;});$$('#ambro details.in2').forEach(d=>{const any=$$('.chip',d).some(c=>!c.hidden);d.hidden=!any;if(nq&&any)d.open=true;});}
+  else if(el.dataset.fl){S.f[el.dataset.fl]=el.value;$('#rows').innerHTML=rowsHTML();}
+  else if(el.dataset.rf){S.rect[el.dataset.rf]=el.value;const b=$('[data-act="sendrect"]');if(b){const R=S.rect;b.disabled=!(R.tipo&&R.motivo.trim().length>=20&&R.items.length>0&&!R.items.some(k=>FONDES[k]));}}
+});
+document.addEventListener('change',e=>{
+  const el=e.target,w=curWiz();
+  if(el.dataset.t&&w){const d=el.dataset.d,p=el.dataset.p,x=el.dataset.x;
+    if(el.dataset.t==='x'){const k=key(d,p,x);if(el.checked)w.sel.add(k);else w.sel.delete(k);}
+    else setGroup(w,d,el.dataset.t==='p'?p:null,el.checked);
+    refreshAmbito(w);}
+  else if(el.dataset.f&&w){w.data[el.dataset.f]=el.value;const t=termOf(w);const te=$('#f-termino');if(te)te.value=t?fmt(t):'—';const ti=$('#f-titulo');if(ti)ti.value=titleOf(w);}
+  else if(el.dataset.fl){S.f[el.dataset.fl]=el.value;$('#rows').innerHTML=rowsHTML();}
+  else if(el.dataset.rf){S.rect[el.dataset.rf]=el.value;}
+  else if(el.id==='chk'&&w){w.chk=el.checked;const N=parseInt(w.data.nDS,10)||0;const b=$('#confbtn');if(b)b.disabled=!(w.chk&&w.sel.size===N&&N>0);}
+});
+document.addEventListener('toggle',e=>{const el=e.target,w=curWiz();if(w&&el.dataset&&el.dataset.pk&&el.tagName==='DETAILS'){if(el.open)w.open.add(el.dataset.pk);else w.open.delete(el.dataset.pk);}},true);
+
+function openConfirm(w){
+  const isD=w.mode==='dee';
+  const m=document.createElement('div');m.className='modal';m.id='modal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-labelledby','mt');
+  m.innerHTML=`<div class="box"><h2 id="mt">¿Confirmar el registro de ${esc(titleOf(w))}?</h2><p>Se bloqueará la edición. Si luego detecta un error, podrá corregirlo con una <b>rectificación</b> (motivo obligatorio, queda en el historial).</p><ul class="tight"><li>${w.sel.size} distritos · ${w.sel.size} de ${esc(w.data.nDS)} según el D.S.</li>${isD?'<li>El ámbito quedará disponible para otros módulos (p. ej. FONDES).</li>':''}</ul><div class="acts2"><button class="btn btn-ghost" data-m="x">Volver a revisar</button><button class="btn btn-primary" data-m="ok" id="mok">Sí, confirmar</button></div></div>`;
+  document.body.appendChild(m);$('#mok').focus();
+  m.addEventListener('click',ev=>{const b=ev.target.closest('[data-m]');if(ev.target===m||(b&&b.dataset.m==='x')){m.remove();return;}
+    if(b&&b.dataset.m==='ok'){m.remove();finishConfirm(w);}});
+}
+function finishConfirm(w){
+  const isD=w.mode==='dee',t=termOf(w);
+  if(isD){const keys=Array.from(w.sel);
+    S.created={id:'nuevo',num:titleOf(w),evento:w.data.evento,peligro:w.data.peligro,inicio:w.data.inicio,plazo:parseInt(w.data.plazo,10),nDS:parseInt(w.data.nDS,10),registro:'Confirmado',prorrogas:0,ambito:keys,ver:1,url:w.data.url,
+      hist:[[fmt(HOY)+' 10:30','Usuario DIREH (ejemplo)','Inició el registro',titleOf(w)+' · plazo '+w.data.plazo+' días'],[fmt(HOY)+' 10:42','Usuario DIREH (ejemplo)','Cotejó contra el anexo del D.S.',keys.length+' de '+w.data.nDS+' según el decreto'],[fmt(HOY)+' 10:44','Usuario DIREH (ejemplo)','Confirmó el registro','Versión 1']]};
+    const i=DEES.findIndex(d=>d.id==='nuevo');if(i>=0)DEES.splice(i,1);DEES.unshift(S.created);}
+  else{S.prList.push({n:titleOf(w),i:w.data.inicio,p:parseInt(w.data.plazo,10),nd:w.sel.size,s:'Confirmado'});dee('148').prorrogas=S.prList.length;}
+  w.done=true;toast('Registro confirmado');render();
+}
+$('#btnPins').setAttribute('aria-pressed','true');
+document.querySelectorAll('[data-ic]').forEach(e=>{e.outerHTML=IC[e.dataset.ic];});
+render();
+})();
+</script>
+</body>
+</html>
