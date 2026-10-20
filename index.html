@@ -654,8 +654,8 @@ function step1HTML(w){
    <div><label class="l" for="f-plazo">Plazo (días) * ${isD?'':pin(2)}</label><input class="in" id="f-plazo" data-f="plazo" inputmode="numeric" placeholder="Ej. 60" value="${esc(d.plazo)}" ${w.errs.plazo?'aria-invalid="true"':''}>${fieldErr(w,'plazo')}</div>
    <div><label class="l" for="f-termino">Fecha de término (calculada)</label><input class="in" id="f-termino" readonly value="${t?fmt(t):'—'}"><div class="hint">Inicio + plazo − 1 día.</div></div>
   </div>
-  <div class="grid g2" style="margin-top:14px">
-   <div><label class="l" for="f-url">Enlace del decreto en El Peruano * ${isD?pin(3):''}</label><input class="in" id="f-url" data-f="url" value="${esc(d.url)}" ${w.errs.url?'aria-invalid="true"':''}><div class="hint" id="urlok">${urlOk(d.url)?'✓ Dominio reconocido':'Use un enlace de elperuano.pe o gob.pe'}</div>${fieldErr(w,'url')}</div>
+  <div class="grid g3" style="margin-top:14px">
+   <div style="grid-column:span 2"><label class="l" for="f-url">Enlace del decreto en El Peruano * ${isD?pin(3):''}</label><input class="in" id="f-url" data-f="url" value="${esc(d.url)}" ${w.errs.url?'aria-invalid="true"':''}><div class="hint" id="urlok">${urlOk(d.url)?'✓ Dominio reconocido':'Use un enlace de elperuano.pe o gob.pe'}</div>${fieldErr(w,'url')}</div>
    <div><label class="l" for="f-nDS">N° de distritos según el D.S. * ${isD?pin(4):''}</label><input class="in" id="f-nDS" data-f="nDS" inputmode="numeric" value="${esc(d.nDS)}" ${w.errs.nDS?'aria-invalid="true"':''}><div class="hint">Dato de control para verificar el ámbito cargado. Un D.S. puede incluir cientos de distritos (p. ej. 707).</div>${fieldErr(w,'nDS')}</div>
   </div>
   ${isD?`<div class="alert a-warn" style="margin-top:14px"><span>⚠</span><span>${pin(5)} Se verificaría si ya existe una DEE vigente con el mismo peligro y distritos coincidentes (regla por validar).</span></div>`:''}
