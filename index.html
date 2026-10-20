@@ -338,6 +338,31 @@ button.kpi[aria-pressed=true]{border-color:#FF7427;box-shadow:inset 0 0 0 1px #F
 .th-sort:hover{color:#FF7427}
 .tbl .n{width:44px;color:#717170;font-variant-numeric:tabular-nums}
 .prc{display:inline-block;margin-left:6px;font-size:11.5px;color:#C2410C;background:#FFF1E6;border-radius:999px;padding:1px 8px;font-weight:500}
+
+/* Importación Excel (ámbito) */
+.amb.stack{grid-template-columns:minmax(0,1fr)}.amb.stack .sticky{position:static}
+.xhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.xh{display:flex;align-items:center;gap:8px;font-size:15px;margin:20px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.xh::before{content:"";width:6px;height:6px;border-radius:50%;background:#FF7427}
+.xcols{margin:0 0 10px}
+.xdz{display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff}
+.xdt{color:#2B2B2B;font-weight:600}.xds{font-size:12px}
+.xfile{display:inline-flex;align-items:center;gap:10px;margin-top:12px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:#14632D}
+.xfile span{color:#2B2B2B}.xfile button{border:0;background:none;cursor:pointer;color:var(--muted)}
+.xks{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.xk{display:flex;align-items:center;gap:12px;border:1px solid #EDEDED;border-radius:12px;padding:12px 14px}
+.xk b{display:block;font-size:22px;line-height:1.1;color:#2B2B2B}.xk span:not(.xi){font-size:12.5px;color:#717170}
+.xi{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center}
+.x-b{background:#DBEAFD;color:#2563EB}.x-g{background:#DBFCE7;color:#16A34A}.x-r{background:#FFE2E2;color:#DC2626}.x-o{background:#FFEDD6;color:#EA580C}.x-c{background:#D5F5F6;color:#0891B2}
+.xnote{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#717170;margin:10px 0 0}
+.xtabs{display:flex;gap:18px;border-bottom:1px solid var(--line);margin-bottom:10px;flex-wrap:wrap}
+.xtabs button{border:0;background:none;padding:8px 2px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;font-weight:500}
+.xtabs button[aria-selected=true]{color:#2B2B2B;font-weight:700;border-bottom-color:#FF7427}
+.xscroll{max-height:380px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.xscroll th{position:sticky;top:0;background:#DCEBEF!important;color:#2B2B2B!important;font-weight:700!important;text-transform:uppercase!important;font-size:12px!important}
+.xu{font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+.xpg{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:8px 0;font-size:13px;color:#717170}
+.xfoot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
 </style>
 </head>
 <body>
@@ -676,19 +701,58 @@ function setGroup(w,d,p,on){
   Object.keys(GEO[d]).forEach(pp=>{if(p&&pp!==p)return;GEO[d][pp].forEach(x=>{const k=key(d,pp,x);if(on)w.sel.add(k);else w.sel.delete(k);});});
 }
 function refreshAmbito(w){syncTree(w);const p=$('#panel');if(p)p.innerHTML=panelHTML(w);const cf=$('#confblock');if(cf)cf.innerHTML=confirmHTML(w);const cb=$('#confbtn');if(cb)cb.disabled=!confOk(w);}
+/* Importación Excel/CSV: archivo simulado de 86 filas (84 distritos de Amazonas + 1 duplicado + 1 código inexistente) */
+const XL_SIZE=25;
+let XL_ROWS=null;
+function xlRows(){
+  if(XL_ROWS)return XL_ROWS;
+  const ks=allKeys(['Amazonas']),rows=[],pi=Object.keys(GEO.Amazonas);
+  ks.forEach(k=>{const a=k.split('|'),pc=String(pi.indexOf(a[1])+1).padStart(2,'0'),dc=String(GEO.Amazonas[a[1]].indexOf(a[2])+1).padStart(2,'0');rows.push({k:k,reg:a[0],prov:a[1],dist:a[2],ubi:'01'+pc+dc});});
+  rows.splice(22,0,Object.assign({},rows[8],{dup:true}));
+  rows.splice(70,0,{reg:'Amazonas',prov:'—',dist:'—',ubi:'019999',nf:true});
+  XL_ROWS=rows.map((r,i)=>Object.assign(r,{fila:i+1}));return XL_ROWS;
+}
+function xlStat(r,w){return r.nf?'nf':r.dup?'dup':w.sel.has(r.k)?'reg':'ok';}
+const XL_BADGE={ok:['b-ok','VÁLIDO'],nf:['b-bad','NO ENCONTRADO'],dup:['b-warn','DUPLICADO'],reg:['b-conf','YA REGISTRADO']};
+const XL_SVG={
+ file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+ ok:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>',
+ bad:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
+ dup:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+ reg:'<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9.5 13l2 2 3.5-4"/>',
+ up:'<path d="M7 18a4 4 0 0 1-.5-7.97A5.5 5.5 0 0 1 17 8.5 4.5 4.5 0 0 1 17 18"/><path d="M12 12v8M9 14.5l3-3 3 3"/>',
+ info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>'
+};
+const xsvg=(n,sz)=>`<svg width="${sz||20}" height="${sz||20}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${XL_SVG[n]}</svg>`;
+function xlResultHTML(w){
+  const x=w.xl,rows=xlRows(),c={ok:0,nf:0,dup:0,reg:0};rows.forEach(r=>c[xlStat(r,w)]++);
+  const tab=x.tab,list=tab==='todos'?rows:rows.filter(r=>xlStat(r,w)===tab),pages=Math.max(1,Math.ceil(list.length/XL_SIZE)),pg=Math.min(x.page,pages-1),from=pg*XL_SIZE;
+  const obs=c.nf+c.dup+c.reg;
+  const tabs=[['todos','Todos',rows.length],['ok','Válidos',c.ok],['nf','No encontrados',c.nf],['dup','Duplicados',c.dup],['reg','Ya registrados',c.reg]];
+  const card=(ic,cls,n,l)=>`<div class="xk"><span class="xi ${cls}">${xsvg(ic,22)}</span><div><b>${n}</b><span>${l}</span></div></div>`;
+  return `<h3 class="xh">Resultado de validación de distritos</h3>
+  <div class="xks">${card('file','x-b',rows.length,'Total de registros procesados')}${card('ok','x-g',c.ok,'Distritos válidos')}${card('bad','x-r',c.nf,'No encontrados')}${card('dup','x-o',c.dup,'Duplicados')}${card('reg','x-c',c.reg,'Ya registrados')}</div>
+  <p class="xnote">${xsvg('info',14)} Solo se agregarán distritos nuevos y válidos. Los registros no encontrados, duplicados o previamente incluidos serán omitidos.</p>
+  <h3 class="xh">Detalle de registros</h3>
+  <div class="xtabs" role="tablist">${tabs.map(t=>`<button role="tab" aria-selected="${tab===t[0]}" data-act="xltab" data-v="${t[0]}">${t[1]} (${t[2]})</button>`).join('')}</div>
+  <div class="tblw xscroll"><table class="tbl" style="min-width:620px"><thead><tr><th>N.° fila</th><th>Región</th><th>Provincia</th><th>Distrito</th><th>Ubigeo</th><th>Estado</th></tr></thead><tbody>
+  ${list.slice(from,from+XL_SIZE).map(r=>{const b=XL_BADGE[xlStat(r,w)];return `<tr><td class="n">${r.fila}</td><td>${esc(r.reg.toUpperCase())}</td><td>${esc(r.prov.toUpperCase())}</td><td>${esc(r.dist.toUpperCase())}</td><td class="xu">${r.ubi}</td><td><span class="badge ${b[0]}">${b[1]}</span></td></tr>`;}).join('')||'<tr><td colspan="6" class="muted" style="text-align:center;padding:18px">Sin registros en esta categoría.</td></tr>'}
+  </tbody></table></div>
+  <div class="xpg"><span>${list.length?from+1:0} – ${Math.min(from+XL_SIZE,list.length)} de ${list.length}</span><button class="btn btn-ghost btn-sm" data-act="xlpage" data-v="-1" aria-label="Página anterior" ${pg===0?'disabled':''}>‹</button><span>${pg+1} / ${pages}</span><button class="btn btn-ghost btn-sm" data-act="xlpage" data-v="1" aria-label="Página siguiente" ${pg>=pages-1?'disabled':''}>›</button></div>
+  <div class="xfoot"><button class="btn btn-ghost" data-act="xlobs" ${obs?'':'disabled'}>Descargar observaciones (${obs})</button><button class="btn btn-primary" data-act="addxl" ${c.ok&&!(w.univ&&w.univ.indexOf('Amazonas')<0)?'':'disabled'}>Agregar ${c.ok} distritos</button></div>`;
+}
 function excelHTML(w){
-  const n=w.sel.size;
-  return `<div class="dz">Arrastre aquí su archivo .xlsx o .csv<br><button class="btn btn-ghost btn-sm" style="margin-top:8px" data-act="xl">Simular carga de “ambito_ds148.xlsx” (86 filas)</button></div>
-  ${w.xl?`<div class="kpis"><div class="kpi"><b>86</b>filas leídas</div><div class="kpi"><b style="color:var(--ok)">84</b>válidas</div><div class="kpi"><b style="color:var(--warn)">1</b>duplicada (omitida)</div><div class="kpi"><b style="color:var(--bad)">1</b>inválida (rechazada)</div></div>
-  <div class="tblw"><table class="tbl" style="min-width:560px"><thead><tr><th>Fila</th><th>Dato</th><th>Problema</th><th>Resultado</th></tr></thead><tbody>
-   <tr><td>23</td><td>Amazonas › Bagua › Imaza</td><td>Duplicado de la fila 9</td><td><span class="badge b-warn">Omitida</span></td></tr>
-   <tr><td>71</td><td>UBIGEO 019999</td><td>El código no existe en el catálogo</td><td><span class="badge b-bad">Rechazada</span></td></tr></tbody></table></div>
-  <div style="margin-top:12px"><button class="btn btn-primary" data-act="addxl" ${w.univ&&w.univ.indexOf('Amazonas')<0?'disabled':''}>Agregar 84 válidos al ámbito</button></div>`:''}`;
+  const x=w.xl;
+  return `<div class="xhead"><div><h3 style="margin:0">Importar distritos desde Excel</h3><p class="muted" style="margin:2px 0 0">Cargue un archivo con Región, Provincia y Distrito. Se validará cada fila y podrá incorporar solo los registros válidos.</p></div><button class="btn btn-ghost btn-sm" data-act="tpl">${xsvg('file',16)} Descargar plantilla</button></div>
+  <h3 class="xh">Cargar archivo</h3>
+  <p class="xcols">Columnas: <b>REGIÓN</b>, <b>PROVINCIA</b> y <b>DISTRITO</b> (se identifica el UBIGEO automáticamente).</p>
+  <div class="dz xdz">${xsvg('up',28)}<div class="xdt">${x?'Arrastre otro archivo Excel aquí o haga clic para reemplazar el actual':'Arrastre su archivo .xlsx o .csv aquí o haga clic para seleccionarlo'}</div><div class="xds">.xlsx / .csv · se validan códigos, duplicados e inexistentes antes de incorporar</div><button class="btn btn-ghost btn-sm" style="margin-top:8px" data-act="xl">${x?'Simular otra carga':'Simular carga de “matriz_ejemplo.xlsx” (86 filas)'}</button></div>
+  ${x?`<div class="xfile">${xsvg('file',16)}<span>matriz_ejemplo.xlsx</span><button data-act="xlclear" aria-label="Quitar archivo">✕</button></div><div id="xlres">${xlResultHTML(w)}</div>`:''}`;
 }
 function step2HTML(w){
   const isP=w.mode==='prorroga';
   /* Única vía de carga del ámbito: importación Excel/CSV (se quitó "Seleccionar en lista") */
-  const body=`<div class="amb"><div>${excelHTML(w)}${isP?'':`<p class="hint">${pin(1)} ${pin(2)}</p>`}</div><div class="sticky" id="panel">${panelHTML(w)}</div></div>`;
+  const body=`<div class="amb stack"><div>${excelHTML(w)}${isP?'':`<p class="hint">${pin(1)} ${pin(2)}</p>`}</div><div class="sticky" id="panel">${panelHTML(w)}</div></div>`;
   return `<h2>Ámbito geográfico ${isP?'':pin(3)}</h2>
   ${isP?`<div class="alert a-info"><span>ℹ</span><span>Se precargó el ámbito de la ${esc(prBase().num)} (84 distritos${prBase().ambito?'':', ámbito de ejemplo'}). Si la prórroga no comprende a todos, quite los distritos desde el panel o importe el archivo con el ámbito prorrogado. Solo pueden incluirse distritos del decreto original. ${pin(1)}</span></div>`:''}
   ${body}
@@ -994,8 +1058,11 @@ document.addEventListener('click',e=>{
    case 'rm':if(w){w.sel.delete(el.dataset.k);refreshAmbito(w);}break;
    case 'clear':if(w&&w.sel.size&&window.confirm('¿Quitar los '+w.sel.size+' distritos seleccionados?')){w.sel.clear();refreshAmbito(w);}break;
    case 'tpl':download('plantilla-ambito-dee.csv','UBIGEO,DEPARTAMENTO,PROVINCIA,DISTRITO\n010101,Amazonas,Chachapoyas,Chachapoyas');break;
-   case 'xl':if(w){w.xl=true;render(true);}break;
-   case 'addxl':if(w){allKeys(['Amazonas']).forEach(k=>w.sel.add(k));refreshAmbito(w);toast('84 distritos agregados desde el archivo');}break;
+   case 'xl':if(w){w.xl={tab:'todos',page:0};render(true);}break;
+   case 'xlclear':if(w){w.xl=false;render(true);}break;
+   case 'xltab':case 'xlpage':if(w&&w.xl){if(a==='xltab'){w.xl.tab=el.dataset.v;w.xl.page=0;}else w.xl.page=Math.max(0,w.xl.page+(+el.dataset.v));const r=$('#xlres');if(r)r.innerHTML=xlResultHTML(w);}break;
+   case 'xlobs':if(w){const rows=xlRows().filter(r=>xlStat(r,w)!=='ok');download('observaciones-importacion.csv','FILA,REGION,PROVINCIA,DISTRITO,UBIGEO,OBSERVACION\n'+rows.map(r=>[r.fila,r.reg,r.prov,r.dist,r.ubi,XL_BADGE[xlStat(r,w)][1]].map(v=>'"'+v+'"').join(',')).join('\n'));}break;
+   case 'addxl':if(w){const n=xlRows().filter(r=>xlStat(r,w)==='ok').length;xlRows().forEach(r=>{if(r.k&&!r.dup)w.sel.add(r.k);});refreshAmbito(w);const r=$('#xlres');if(r)r.innerHTML=xlResultHTML(w);toast(n+' distritos agregados desde el archivo');}break;
    case 'expSel':if(w)download('ambito-seleccionado.csv',csvOf(Array.from(w.sel)));break;
    case 'confirm':if(w&&!el.disabled)openConfirm(w);break;
    case 'addrect':{const sel=$('#rd');if(sel.value){S.rect.items.push(sel.value);render(true);}break;}
