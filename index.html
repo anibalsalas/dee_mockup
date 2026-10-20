@@ -108,6 +108,14 @@ table.tbl{width:100%;border-collapse:collapse;min-width:900px}
 .g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .wizfoot{display:flex;justify-content:space-between;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line);flex-wrap:wrap}
 .wizfoot .r{display:flex;gap:10px;flex-wrap:wrap}
+.wizlay{display:grid;grid-template-columns:240px minmax(0,1fr);gap:16px;align-items:start}
+.wizlay .stepper{flex-direction:column;margin:0;position:sticky;top:16px}
+.wizlay .stepper li{min-width:0;flex:none}
+.wizlay .stp{padding:10px 12px;gap:12px}
+.stp .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:#FDEBDD;color:#FF7427;flex:none}
+.stp .ic svg{width:20px;height:20px}
+.wizlay .stepper .cur .n,.wizlay .stepper .done .n{background:none}
+@media (max-width:900px){.wizlay{grid-template-columns:1fr}.wizlay .stepper{flex-direction:row;position:static}.wizlay .stepper li{flex:1}}
 .alert{border-radius:10px;padding:10px 14px;display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
 .a-info{background:var(--blue-bg);color:#0B3F70}.a-warn{background:var(--warn-bg);color:var(--warn)}.a-ok{background:var(--ok-bg);color:var(--ok)}.a-bad{background:var(--bad-bg);color:var(--bad)}
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
@@ -481,7 +489,7 @@ const NOTES={
   [6,'sen','Acciones y trazabilidad','El título del D.S. abre la consulta. El menú ⋮ ofrece "Trazabilidad": un modal con el árbol completo de la declaratoria y sus prórrogas, sombreando el dispositivo desde el que se abrió. "Registrar prórroga" aparece en la declaratoria sin prórrogas o en la última prórroga (vigente o finalizada); cada prórroga tiene Editar (con motivo y nueva versión) y Eliminar (solo la última, con alerta y motivo). Todo queda en el Historial de la Consulta.']
  ],
  'nueva-1':[
-  [1,'sen','Decreto estructurado','Tipo, número, año y sector en campos separados: el título se arma solo y se evitan "DS 111" o "DS-PRUEBA2". Permite detectar duplicados.'],
+  [1,'sen','Decreto estructurado','Número y año en campos separados: el título se arma solo y se evitan "DS 111" o "DS-PRUEBA2". Permite detectar duplicados.'],
   [2,'sen','Término calculado en vivo','Sin plazo por defecto y con la fecha de término a la vista. El tope de plazo por tipo de evento se validaría contra el reglamento (por confirmar).'],
   [3,'sen','URL validada','Acepta solo dominios de El Peruano o gob.pe. Hoy el campo admite cualquier texto: en QA se vieron "WWW" y "www.google.com", y además sigue editable después de guardar los datos.'],
   [4,'inf','Referencia para el control','"N° de distritos según el D.S." es el dato que permite verificar que el ámbito registrado corresponde al decreto (informe 2.4, último párrafo).'],
@@ -586,21 +594,23 @@ function validate(w){
   return e;
 }
 function fieldErr(w,f){return w.errs[f]?`<div class="err" id="err-${f}">${esc(w.errs[f])}</div>`:`<div class="err" id="err-${f}"></div>`;}
-function stepper(w,labels){
-  return `<ol class="stepper" aria-label="Pasos del registro">${labels.map((l,i)=>{const n=i+1;const st=w.step===n?'cur':(w.step>n?'done':'');
-   return `<li class="${st}"><button class="stp" data-act="step" data-n="${n}" ${n>w.step?'disabled':''} ${w.step===n?'aria-current="step"':''}><span class="n">${w.step>n?'✓':n}</span><span>${esc(l)}</span></button></li>`;}).join('')}</ol>`;
+const WIZ_LABELS=['Datos del decreto','Ámbito geográfico'];
+const WIZ_ICONS=['<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
+ '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>'];
+function stepper(w){
+  return `<ol class="stepper" aria-label="Pasos del registro">${WIZ_LABELS.map((l,i)=>{const n=i+1;const st=w.step===n?'cur':(w.step>n?'done':'');
+   return `<li class="${st}"><button class="stp" data-act="step" data-n="${n}" ${n>w.step?'disabled':''} ${w.step===n?'aria-current="step"':''}><span class="ic">${WIZ_ICONS[i]}</span><span>${esc(l)}</span></button></li>`;}).join('')}</ol>`;
 }
+const wizLayout=(w,body,card)=>`<div class="wizlay">${stepper(w)}${card?`<section class="card">${body}</section>`:`<div>${body}</div>`}</div>`;
 function step1HTML(w){
   const d=w.data,isD=w.mode==='dee',t=termOf(w);
   const nErr=Object.keys(w.errs).length;
   return `<h2>Datos del dispositivo legal ${pin(1)}${isD?pin(6):''}</h2>
   ${nErr?`<div class="alert a-bad" role="alert"><span>✗</span><span>Revise ${nErr} campo${nErr>1?'s':''} antes de continuar: cada uno indica qué falta.</span></div>`:''}
   <div class="alert a-info"><span>ℹ</span><span>Datos de ejemplo precargados para la demostración. ${isD?'Registre aquí las DEE publicadas en El Peruano.':'Prórroga de la '+esc(prBase().num)+'.'}</span></div>
-  <div class="grid g4">
-   <div><label class="l" for="f-tipo">Tipo de norma</label><select class="in" id="f-tipo" disabled><option>Decreto Supremo</option></select></div>
+  <div class="grid g2">
    <div><label class="l" for="f-numero">Número *</label><input class="in" id="f-numero" data-f="numero" inputmode="numeric" maxlength="4" value="${esc(d.numero)}" ${w.errs.numero?'aria-invalid="true"':''}>${fieldErr(w,'numero')}</div>
    <div><label class="l" for="f-anio">Año *</label><select class="in" id="f-anio" data-f="anio"><option ${d.anio==='2026'?'selected':''}>2026</option><option ${d.anio==='2025'?'selected':''}>2025</option></select></div>
-   <div><label class="l" for="f-sector">Sector refrendante *</label><select class="in" id="f-sector" data-f="sector"><option ${d.sector==='PCM'?'selected':''}>PCM</option><option ${d.sector==='MINDEF'?'selected':''}>MINDEF</option></select></div>
   </div>
   <div class="grid g3" style="margin-top:14px">
    <div><label class="l" for="f-titulo">Título del registro (automático)</label><input class="in" id="f-titulo" readonly value="${esc(titleOf(w))}"></div>
@@ -665,14 +675,10 @@ function filterTree(w){
 function setGroup(w,d,p,on){
   Object.keys(GEO[d]).forEach(pp=>{if(p&&pp!==p)return;GEO[d][pp].forEach(x=>{const k=key(d,pp,x);if(on)w.sel.add(k);else w.sel.delete(k);});});
 }
-function refreshAmbito(w){syncTree(w);const p=$('#panel');if(p)p.innerHTML=panelHTML(w);const nb=$('#nextbtn');if(nb)nb.disabled=w.sel.size===0;}
+function refreshAmbito(w){syncTree(w);const p=$('#panel');if(p)p.innerHTML=panelHTML(w);const cf=$('#confblock');if(cf)cf.innerHTML=confirmHTML(w);const cb=$('#confbtn');if(cb)cb.disabled=!confOk(w);}
 function excelHTML(w){
   const n=w.sel.size;
-  return `<div class="steps3">
-   <div class="stepbox"><b>1. Descargue la plantilla</b><p class="muted">Columnas: UBIGEO, DEPARTAMENTO, PROVINCIA, DISTRITO. Un ejemplo por fila.</p><button class="btn btn-ghost btn-sm" data-act="tpl">Descargar plantilla (CSV)</button></div>
-   <div class="stepbox"><b>2. Complete el ámbito</b><p class="muted">Puede copiar el anexo del decreto. El ubigeo (6 dígitos) identifica el distrito sin ambigüedad; ej. 010101 = Chachapoyas.</p></div>
-   <div class="stepbox"><b>3. Cargue el archivo</b><p class="muted">Se valida antes de agregar: duplicados, códigos inexistentes y filas vacías.</p></div></div>
-  <div class="dz" style="margin-top:14px">Arrastre aquí su archivo .xlsx o .csv<br><button class="btn btn-ghost btn-sm" style="margin-top:8px" data-act="xl">Simular carga de “ambito_ds148.xlsx” (86 filas)</button></div>
+  return `<div class="dz">Arrastre aquí su archivo .xlsx o .csv<br><button class="btn btn-ghost btn-sm" style="margin-top:8px" data-act="xl">Simular carga de “ambito_ds148.xlsx” (86 filas)</button></div>
   ${w.xl?`<div class="kpis"><div class="kpi"><b>86</b>filas leídas</div><div class="kpi"><b style="color:var(--ok)">84</b>válidas</div><div class="kpi"><b style="color:var(--warn)">1</b>duplicada (omitida)</div><div class="kpi"><b style="color:var(--bad)">1</b>inválida (rechazada)</div></div>
   <div class="tblw"><table class="tbl" style="min-width:560px"><thead><tr><th>Fila</th><th>Dato</th><th>Problema</th><th>Resultado</th></tr></thead><tbody>
    <tr><td>23</td><td>Amazonas › Bagua › Imaza</td><td>Duplicado de la fila 9</td><td><span class="badge b-warn">Omitida</span></td></tr>
@@ -686,38 +692,28 @@ function step2HTML(w){
   return `<h2>Ámbito geográfico ${isP?'':pin(3)}</h2>
   ${isP?`<div class="alert a-info"><span>ℹ</span><span>Se precargó el ámbito de la ${esc(prBase().num)} (84 distritos${prBase().ambito?'':', ámbito de ejemplo'}). Si la prórroga no comprende a todos, quite los distritos desde el panel o importe el archivo con el ámbito prorrogado. Solo pueden incluirse distritos del decreto original. ${pin(1)}</span></div>`:''}
   ${body}
-  <div class="wizfoot"><button class="btn btn-ghost" data-act="prev">← Atrás</button><div class="r"><button class="btn btn-ghost" data-act="draft">Guardar avance</button>${isP?'':pin(5)}<button class="btn btn-primary" id="nextbtn" data-act="next" ${w.sel.size?'':'disabled'}>Siguiente: revisión →</button></div></div>`;
+  <div id="confblock">${confirmHTML(w)}</div>
+  <div class="wizfoot"><button class="btn btn-ghost" data-act="prev">← Atrás</button><div class="r">${w.edit?'':'<button class="btn btn-ghost" data-act="draft">Guardar avance</button>'}<button class="btn btn-primary" id="confbtn" data-act="confirm" ${confOk(w)?'':'disabled'}>${w.edit?'Guardar cambios':'Confirmar registro'}</button></div></div>`;
 }
-function step3HTML(w){
+function confirmHTML(w){
   const isD=w.mode==='dee',t=termOf(w),n=w.sel.size,N=parseInt(w.data.nDS,10)||0,match=n===N&&n>0;
-  const g=groupKeys(Array.from(w.sel));
-  let rows='',np=0;Object.keys(g).forEach(d=>Object.keys(g[d]).forEach(p=>{np++;rows+=`<tr><td>${esc(d)}</td><td>${esc(p)}</td><td class="r">${g[d][p].length}</td></tr>`;}));
-  const ok=confOk(w),ch=w.edit?prDiff(w):[],post=w.edit?prBase().pr.length-w.edit:0;
-  const editBox=w.edit?`<h3 style="margin-top:16px">Cambios respecto a la versión registrada</h3>${ch.length?`<ul class="chg">${ch.map(c=>`<li>${c}</li>`).join('')}</ul>`:'<p class="muted">Aún no hay cambios. Vuelva a los pasos anteriores para modificar la prórroga.</p>'}
+  const ch=w.edit?prDiff(w):[],post=w.edit?prBase().pr.length-w.edit:0;
+  const editBox=w.edit?`<h3 style="margin-top:16px">Cambios respecto a la versión registrada</h3>${ch.length?`<ul class="chg">${ch.map(c=>`<li>${c}</li>`).join('')}</ul>`:'<p class="muted">Aún no hay cambios. Modifique los datos del decreto o el ámbito.</p>'}
    ${post&&ch.some(c=>c.indexOf('Plazo')===0)?`<div class="alert a-warn"><span>⚠</span><span>Se recalcularán las fechas de ${post} prórroga${post>1?'s':''} posterior${post>1?'es':''} (cada una inicia el día siguiente al término anterior).</span></div>`:''}
    <div style="margin-top:12px"><label class="l" for="f-motivo">Motivo de la edición * (mínimo ${MIN_MOT} caracteres)</label><textarea class="in" id="f-motivo" data-f="motivo" rows="3" placeholder="Ej. Se corrigió el plazo según fe de erratas publicada en El Peruano">${esc(w.data.motivo||'')}</textarea><div class="hint">Queda en el historial con usuario, fecha y hora, junto con los cambios.</div></div>`:'';
-  return `<h2>Revisión y confirmación ${pin(1)}</h2>
-  <div class="cols2"><div>
-   <dl class="kv"><dt>Dispositivo legal</dt><dd><b>${esc(titleOf(w))}</b></dd>${isD?`<dt>Evento / peligro</dt><dd>${esc(w.data.evento)} · ${esc(w.data.peligro)}</dd>`:`<dt>Prórroga de</dt><dd>${esc(prBase().num)}</dd>`}
-   <dt>Vigencia</dt><dd>${fmt(parseISO(w.data.inicio))} al ${t?fmt(t):'—'} (${esc(w.data.plazo)} días)</dd><dt>Enlace</dt><dd><a href="${esc(w.data.url)}" onclick="return false">${esc(w.data.url.slice(0,48))}…</a></dd><dt>Ámbito</dt><dd>${Object.keys(g).length} departamento(s) · ${np} provincia(s) · <b>${n} distritos</b></dd></dl>
-   <div style="margin-top:14px">${counterHTML(w)}</div>
-   <h3>Lista de verificación</h3>
-   <ul class="tight" style="list-style:none;padding:0"><li class="rec-ok">✓ Datos del decreto completos y enlace válido</li><li class="rec-ok">✓ Fecha de término calculada: ${t?fmt(t):'—'}</li><li class="${match?'rec-ok':'rec-bad'}">${match?'✓':'✗'} Distritos cargados: ${n} de ${N} según el D.S.</li></ul>
-   <label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" id="chk" ${w.chk?'checked':''}><span>Cotejé este resumen con el anexo del decreto publicado.</span></label>${editBox}</div>
-  <div><h3>Resumen por provincia (para cotejar con el anexo)</h3><div class="tblw"><table class="tbl" style="min-width:300px"><thead><tr><th>Departamento</th><th>Provincia</th><th class="r">Distritos</th></tr></thead><tbody>${rows}<tr><td colspan="2"><b>Total</b></td><td class="r"><b>${n}</b></td></tr></tbody></table></div>
-   <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" data-act="expSel">Exportar ámbito a Excel (CSV)</button></div></div></div>
-  <div class="alert a-warn" style="margin-top:14px"><span>⚠</span><span>${pin(2)} ${w.edit?'Al guardar se crea una <b>nueva versión</b> de la prórroga; la anterior y el motivo quedan en el historial de la declaratoria.':`Al confirmar, el registro se bloquea${isD?' y el ámbito queda disponible para otros módulos (p. ej. FONDES)':''} ${pin(3)}. Cualquier cambio posterior se hará mediante una <b>rectificación</b> con motivo, que queda en el historial.`}</span></div>
-  <div class="wizfoot"><button class="btn btn-ghost" data-act="prev">← Atrás</button><div class="r">${w.edit?'':'<button class="btn btn-ghost" data-act="draft">Guardar avance</button>'}<button class="btn btn-primary" id="confbtn" data-act="confirm" ${ok?'':'disabled'}>${w.edit?'Guardar cambios':'Confirmar registro'}</button></div></div>
-  ${match?'':'<p class="err" style="text-align:right">No se puede confirmar mientras el ámbito no coincida con el N° de distritos del decreto. Corrija el ámbito o el dato de control.</p>'}`;
+  return `<div style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px"><h3 style="margin-top:0">Verificación antes de confirmar</h3>
+   <ul class="tight" style="list-style:none;padding:0"><li class="rec-ok">✓ Datos del decreto completos · término ${t?fmt(t):'—'}</li><li class="${match?'rec-ok':'rec-bad'}">${match?'✓':'✗'} Distritos cargados: ${n} de ${N} según el D.S.</li></ul>
+   <label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" id="chk" ${w.chk?'checked':''}><span>Cotejé el ámbito cargado con el anexo del decreto publicado.</span></label>${editBox}
+   <div class="alert a-warn" style="margin-top:14px"><span>⚠</span><span>${w.edit?'Al guardar se crea una <b>nueva versión</b> de la prórroga; la anterior y el motivo quedan en el historial de la declaratoria.':`Al confirmar, el registro se bloquea${isD?' y el ámbito queda disponible para otros módulos (p. ej. FONDES)':''}. Cualquier cambio posterior se hará mediante una <b>rectificación</b> con motivo, que queda en el historial.`}</span></div>
+   ${match?'':'<p class="err" style="text-align:right">No se puede confirmar mientras el ámbito no coincida con el N° de distritos del decreto. Corrija el ámbito o el dato de control.</p>'}</div>`;
 }
 function wizView(mode){
   const w=getWiz(mode),isD=mode==='dee';
   if(w.done)return pageHead(isD?'Registro confirmado':'Prórroga registrada',['Declaratoria de estado de emergencia',isD?'Nueva declaratoria':'Nueva prórroga'],'')+
    `<section class="card"><div class="empty"><svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="26" fill="#DDF3E4"/><path d="M17 29l8 8 14-16" fill="none" stroke="#14632D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>${esc(titleOf(w))} confirmado${isD?'':' (prórroga)'}</h3><p>${w.sel.size} distritos registrados. El historial muestra quién confirmó y cuándo.</p>
    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px"><button class="btn btn-primary" data-act="go" data-to="${isD?'#/consulta/nuevo':'#/prorrogas'}">${isD?'Ver la declaratoria':'Ver lista de prórrogas'}</button><button class="btn btn-ghost" data-act="go" data-to="#/lista">Ir a la lista</button></div></div></section>`;
-  const labels=['Datos del decreto','Ámbito geográfico','Revisión y confirmación'];
-  const body=w.step===1?step1HTML(w):(w.step===2?step2HTML(w):step3HTML(w));
-  return pageHead(isD?(w.cont?'Continuar registro de '+esc(titleOf(w)):'Nueva declaratoria de estado de emergencia'):(w.edit?'Editar Prórroga N° '+w.edit+' de '+esc(prBase().num):'Nueva prórroga de '+esc(prBase().num)),['Declaratoria de estado de emergencia','Declaratorias',isD?(w.cont?'Continuar registro':'Nueva declaratoria'):(w.edit?'Editar prórroga':'Nueva prórroga')],'')+stepper(w,labels)+`<section class="card">${body}</section>`;
+  const body=w.step===1?step1HTML(w):step2HTML(w);
+  return pageHead(isD?(w.cont?'Continuar registro de '+esc(titleOf(w)):'Nueva declaratoria de estado de emergencia'):(w.edit?'Editar Prórroga N° '+w.edit+' de '+esc(prBase().num):'Nueva prórroga de '+esc(prBase().num)),['Declaratoria de estado de emergencia','Declaratorias',isD?(w.cont?'Continuar registro':'Nueva declaratoria'):(w.edit?'Editar prórroga':'Nueva prórroga')],'')+wizLayout(w,body,true);
 }
 
 /* ---------- Pantallas ---------- */
@@ -767,7 +763,7 @@ const kebab=(items,label)=>`<div class="acts"><button class="kebab" data-act="me
 const trazBtn=(id,n)=>`<button data-act="traz" data-pr="${id}" data-n="${n}" aria-haspopup="dialog">Trazabilidad</button>`;
 function rowActs(d){let items='';
   if(d.registro==='Pendiente'){const falta=d.nDS-d.cargados;
-    items=`<button data-act="deecont" data-step="1" aria-haspopup="dialog">Editar datos</button><button ${falta>0?'disabled title="Faltan '+falta+' distritos respecto al decreto"':'data-act="deecont" data-step="3"'}>Confirmar registro${falta>0?' <span class="muted" style="font-size:12px">(faltan '+falta+')</span>':''}</button>${trazBtn(d.id,0)}<button data-act="toast" data-msg="Abriría el PDF (ejemplo)">Ver PDF</button><hr><button class="danger" data-act="toast" data-msg="Anular registro pendiente: pediría motivo (ejemplo)">Anular registro pendiente…</button>`;}
+    items=`<button data-act="deecont" data-step="1" aria-haspopup="dialog">Editar datos</button><button ${falta>0?'disabled title="Faltan '+falta+' distritos respecto al decreto"':'data-act="deecont" data-step="2"'}>Confirmar registro${falta>0?' <span class="muted" style="font-size:12px">(faltan '+falta+')</span>':''}</button>${trazBtn(d.id,0)}<button data-act="toast" data-msg="Abriría el PDF (ejemplo)">Ver PDF</button><hr><button class="danger" data-act="toast" data-msg="Anular registro pendiente: pediría motivo (ejemplo)">Anular registro pendiente…</button>`;}
   /* Con prórrogas, "Registrar prórroga" pasa a la última prórroga (el último D.S. ingresado) */
   else items=`<button data-act="go" data-to="#/consulta/${d.id}">Consultar</button>`+(d.prorrogas?'':`<button data-act="prmodal" data-pr="${d.id}" aria-haspopup="dialog">Registrar prórroga</button>`)+trazBtn(d.id,0)+`<hr><button data-act="toast" data-msg="Ámbito exportado a Excel (ejemplo)">Exportar ámbito</button><button data-act="toast" data-msg="Abriría el PDF (ejemplo)">Ver PDF</button>`;
   return kebab(items,'Acciones de '+esc(d.num));
@@ -908,7 +904,7 @@ function navHTML(r){
   `<div class="grp ${g1?'open':''}">${ico('doc')}<span>Declaratoria de estado de emergencia</span><span class="chev">${IC.chev}</span></div>`+
   `<a href="#/lista" class="sub ${g1?'on':''}">Declaratorias</a>`;
 }
-function notesKey(r,w){if(r==='nueva')return 'nueva-'+w.step;if(r==='prorroga-nueva')return w.step===1?'prorroga-1':(w.step===2?'prorroga-2':'nueva-3');return r;}
+function notesKey(r,w){if(r==='nueva')return 'nueva-'+w.step;if(r==='prorroga-nueva')return 'prorroga-'+w.step;return r;}
 function renderNotes(r){}
 function render(keepScroll){
   const h=location.hash.replace(/^#\/?/,'')||'resumen';const parts=h.split('/');const r=parts[0];
@@ -938,11 +934,11 @@ function renderPrModal(keepScroll){
   if(!S.prModal){if(m)m.remove();return;}
   const isD=S.prModal==='D',st=m&&keepScroll?m.scrollTop:0,w=getWiz(isD?'dee':'prorroga');
   if(!m){m=document.createElement('div');m.className='modal';m.id='prmodal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-labelledby','prmt');document.body.appendChild(m);}
-  const body=w.step===1?step1HTML(w):(w.step===2?step2HTML(w):step3HTML(w));
+  const body=w.step===1?step1HTML(w):step2HTML(w);
   m.innerHTML=isD?`<div class="box wide"><div class="mh"><div><h2 id="prmt">${w.cont?'Continuar registro de '+esc(titleOf(w)):'Nueva declaratoria de estado de emergencia'}</h2><div class="sub">${w.cont?'Registro pendiente · 412 de 707 distritos cargados · puede guardar el avance y retomarlo cuando quiera':'Registre la DEE publicada en El Peruano · puede guardar el avance y retomarlo desde la lista'}</div></div><button class="mx" data-act="prclose" aria-label="Cerrar">×</button></div>
-   ${stepper(w,['Datos del decreto','Ámbito geográfico','Revisión y confirmación'])}${body}</div>`
+   ${wizLayout(w,body,false)}</div>`
   :`<div class="box wide"><div class="mh"><div><h2 id="prmt">${w.edit?'Editar Prórroga N° '+w.edit+' de '+esc(prBase().num):'Nueva prórroga de '+esc(prBase().num)}</h2><div class="sub">${w.edit?'Versión registrada: '+esc(w.orig.num)+' · los cambios requieren motivo y quedan en el historial':esc(prBase().peligro)+(lastPr(prBase())?' · continúa la Prórroga N° '+lastPr(prBase()).n+' ('+esc(lastPr(prBase()).num)+')':'')+' · '+(vigEf(prBase()).k==='off'?'finalizó el':'término vigente')+' '+fmt(endEf(prBase()))}</div></div><button class="mx" data-act="prclose" aria-label="Cerrar">×</button></div>
-   ${stepper(w,['Datos del decreto','Ámbito geográfico','Revisión y confirmación'])}${body}</div>`;
+   ${wizLayout(w,body,false)}</div>`;
   m.scrollTop=st;
 }
 /* Registros en página completa (no modal) */
@@ -963,7 +959,7 @@ document.addEventListener('click',e=>{
    case 'go':{if(el.dataset.reset==='D')S.wizD=null;if(el.dataset.reset==='P')S.wizP=null;
      if(el.dataset.pr){S.prFor=el.dataset.pr;S.prBack=location.hash||'#/lista';}
      if(el.dataset.tab)S.ctabNext=el.dataset.tab;
-     if(el.dataset.step&&el.dataset.to==='#/nueva'){const nw=getWiz('dee');nw.data.numero='151';nw.data.nDS='707';nw.step=+el.dataset.step||2;}
+     if(el.dataset.step&&el.dataset.to==='#/nueva'){const nw=getWiz('dee');nw.data.numero='151';nw.data.nDS='707';nw.step=Math.min(2,+el.dataset.step||2);}
      const t=el.dataset.to;if(location.hash===t)render();else location.hash=t;break;}
    case 'burger':if(window.innerWidth>900)$('#app').classList.toggle('side-off');else $('#side').classList.toggle('open');break;
    case 'notes':S.notesOpen=!S.notesOpen;renderNotes(S.route);break;
@@ -976,7 +972,7 @@ document.addEventListener('click',e=>{
    case 'fclear':S.f={q:'',tipo:'',vig:'',evt:'',pel:'',chip:''};render(true);break;
    case 'prmodal':{S.prFor=el.dataset.pr;S.prBack=location.hash||'#/lista';S.wizP=null;goTo('#/prorroga-nueva');break;}
    case 'prclose':closePrModal();break;
-   case 'deecont':{S.wizD=null;const nw=getWiz('dee');Object.assign(nw.data,{numero:'151',evento:'Peligro inminente',peligro:'Huaico',inicio:'2026-10-16',plazo:'30',nDS:'707',url:'https://busquedas.elperuano.pe/dispositivo/NL/ejemplo-ds-151-2026-pcm'});nw.step=+el.dataset.step||2;nw.cont=true;goTo('#/nueva');break;}
+   case 'deecont':{S.wizD=null;const nw=getWiz('dee');Object.assign(nw.data,{numero:'151',evento:'Peligro inminente',peligro:'Huaico',inicio:'2026-10-16',plazo:'30',nDS:'707',url:'https://busquedas.elperuano.pe/dispositivo/NL/ejemplo-ds-151-2026-pcm'});nw.step=Math.min(2,+el.dataset.step||2);nw.cont=true;goTo('#/nueva');break;}
    case 'deemodal':{S.wizD=null;goTo('#/nueva');break;}
    case 'predit':{S.wizP=mkEditWiz(el.dataset.pr,+el.dataset.n);S.prBack=location.hash||'#/lista';goTo('#/prorroga-nueva');break;}
    case 'prdel':openDelPr(el.dataset.pr,+el.dataset.n);break;
@@ -990,8 +986,7 @@ document.addEventListener('click',e=>{
    case 'step':if(w){w.step=+el.dataset.n;render();}break;
    case 'prev':if(w){w.step=Math.max(1,w.step-1);render();}break;
    case 'next':if(w){
-      if(w.step===1){w.errs=validate(w);if(Object.keys(w.errs).length){render(true);const first=$('[aria-invalid="true"]');if(first)first.focus();return;}w.step=2;render();}
-      else if(w.step===2){w.step=3;render();}}break;
+      if(w.step===1){w.errs=validate(w);if(Object.keys(w.errs).length){render(true);const first=$('[aria-invalid="true"]');if(first)first.focus();return;}w.step=2;render();}}break;
    case 'draft':toast('Avance guardado (ejemplo). Podrá retomarlo desde la lista.');break;
    case 'tab2':if(w){w.tab=el.dataset.v;render(true);}break;
    case 'expand':$$('#tree details').forEach(x=>x.open=true);break;
