@@ -339,6 +339,12 @@ button.kpi[aria-pressed=true]{border-color:#FF7427;box-shadow:inset 0 0 0 1px #F
 .tbl .n{width:44px;color:#717170;font-variant-numeric:tabular-nums}
 .prc{display:inline-block;margin-left:6px;font-size:11.5px;color:#C2410C;background:#FFF1E6;border-radius:999px;padding:1px 8px;font-weight:500}
 
+/* Pasos del registro: solo icono */
+.wizlay{grid-template-columns:84px minmax(0,1fr)}
+.wizlay .stp{justify-content:center;padding:10px}
+.wizlay .stp .ic{width:56px;height:56px;border-radius:14px}
+.wizlay .stp .ic svg{width:30px;height:30px}
+@media (max-width:900px){.wizlay{grid-template-columns:1fr}.wizlay .stepper li{flex:none}}
 /* Importación Excel (ámbito) */
 .amb.stack{grid-template-columns:minmax(0,1fr)}.amb.stack .sticky{position:static}
 .xhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
@@ -624,7 +630,7 @@ const WIZ_ICONS=['<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>'];
 function stepper(w){
   return `<ol class="stepper" aria-label="Pasos del registro">${WIZ_LABELS.map((l,i)=>{const n=i+1;const st=w.step===n?'cur':(w.step>n?'done':'');
-   return `<li class="${st}"><button class="stp" data-act="step" data-n="${n}" ${n>w.step?'disabled':''} ${w.step===n?'aria-current="step"':''}><span class="ic">${WIZ_ICONS[i]}</span><span>${esc(l)}</span></button></li>`;}).join('')}</ol>`;
+   return `<li class="${st}"><button class="stp" data-act="step" data-n="${n}" aria-label="${esc(l)}" title="${esc(l)}"${n>w.step?'disabled':''} ${w.step===n?'aria-current="step"':''}><span class="ic">${WIZ_ICONS[i]}</span></button></li>`;}).join('')}</ol>`;
 }
 const wizLayout=(w,body,card)=>`<div class="wizlay">${stepper(w)}${card?`<section class="card">${body}</section>`:`<div>${body}</div>`}</div>`;
 function step1HTML(w){
@@ -633,12 +639,12 @@ function step1HTML(w){
   return `<h2>Datos del dispositivo legal ${pin(1)}${isD?pin(6):''}</h2>
   ${nErr?`<div class="alert a-bad" role="alert"><span>✗</span><span>Revise ${nErr} campo${nErr>1?'s':''} antes de continuar: cada uno indica qué falta.</span></div>`:''}
   <div class="alert a-info"><span>ℹ</span><span>Datos de ejemplo precargados para la demostración. ${isD?'Registre aquí las DEE publicadas en El Peruano.':'Prórroga de la '+esc(prBase().num)+'.'}</span></div>
-  <div class="grid g2">
-   <div><label class="l" for="f-numero">Número *</label><input class="in" id="f-numero" data-f="numero" inputmode="numeric" maxlength="4" value="${esc(d.numero)}" ${w.errs.numero?'aria-invalid="true"':''}>${fieldErr(w,'numero')}</div>
+  <div class="grid g3">
+   <div><label class="l" for="f-numero">Número D.S *</label><input class="in" id="f-numero" data-f="numero" inputmode="numeric" maxlength="4" value="${esc(d.numero)}" ${w.errs.numero?'aria-invalid="true"':''}>${fieldErr(w,'numero')}</div>
    <div><label class="l" for="f-anio">Año *</label><select class="in" id="f-anio" data-f="anio"><option ${d.anio==='2026'?'selected':''}>2026</option><option ${d.anio==='2025'?'selected':''}>2025</option></select></div>
+   <div><label class="l" for="f-titulo">Título del registro (automático)</label><input class="in" id="f-titulo" readonly value="${esc(titleOf(w))}"></div>
   </div>
   <div class="grid g3" style="margin-top:14px">
-   <div><label class="l" for="f-titulo">Título del registro (automático)</label><input class="in" id="f-titulo" readonly value="${esc(titleOf(w))}"></div>
    ${isD?`<div><label class="l" for="f-evento">Tipo de evento *</label><select class="in" id="f-evento" data-f="evento">${EVENTOS.map(x=>`<option ${d.evento===x?'selected':''}>${x}</option>`).join('')}</select></div>
    <div><label class="l" for="f-peligro">Tipo de peligro *</label><select class="in" id="f-peligro" data-f="peligro">${PELIGROS.map(x=>`<option ${d.peligro===x?'selected':''}>${x}</option>`).join('')}</select></div>`
    :`<div style="grid-column:span 2"><label class="l">Declaratoria que se prorroga</label><input class="in" readonly value="${esc(prBase().num)} · ${esc(prBase().peligro)} · ${fmt(parseISO(prBase().inicio))} al ${fmt(endEf(prBase()))}${prBase().prorrogas?' (con '+prBase().prorrogas+' prórroga'+(prBase().prorrogas>1?'s':'')+')':''}"></div>`}
