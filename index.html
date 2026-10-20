@@ -818,7 +818,7 @@ function listaView(){
    ${sel('fv','vig','Estado de declaratoria',[['','Todas'],['ok','Vigente'],['off','Finalizado']])}
    ${sel('fe','evt','Evento',[['','Todos']].concat(EVENTOS.map(p=>[p,p])))}
    ${sel('fp','pel','Peligro',[['','Todos']].concat(PELIGROS.map(p=>[p,p])))}
-   <div class="fbtns"><button class="ibtn" data-act="fsearch" title="Buscar" aria-label="Buscar">${ico('search')}</button><button class="ibtn" data-act="fclear" title="Limpiar filtros" aria-label="Limpiar filtros">${ico('refresh')}</button><button class="ibtn" data-act="ftog" title="${S.fcoll?'Mostrar filtros':'Ocultar filtros'}" aria-label="${S.fcoll?'Mostrar filtros':'Ocultar filtros'}" aria-expanded="${!S.fcoll}">${ico('updown')}</button></div></div>
+   <div class="fbtns"><button class="ibtn" data-act="fsearch" title="Buscar" aria-label="Buscar">${ico('search')}</button><button class="ibtn" data-act="fclear" title="Limpiar filtros" aria-label="Limpiar filtros">${ico('refresh')}</button></div></div>
   <div class="lbar"><span class="muted">Haga clic en un indicador para filtrar la tabla ${pin(2)}</span></div>
   <div class="kpis k5">${kpi('',rows.length,'Total')}${kpi('vig',cnt.vig,'Vigentes')}${kpi('soon',cnt.soon,'Por vencer (≤ 7 días)')}${kpi('fin',cnt.fin,'Finalizados')}${kpi('pro',cnt.pro,'DEE con prórrogas')}</div>
   <div class="lbar"><span class="muted">Orden: N° de D.S., ${S.sort==='desc'?'del más reciente al más antiguo':'del más antiguo al más reciente'}</span></div>
