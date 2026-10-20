@@ -41,7 +41,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 .tbtn[aria-pressed=true]{background:var(--blue-bg);border-color:#9CC3E8;color:var(--blue)}
 .user{display:flex;flex-direction:column;line-height:1.2;text-align:right;font-size:12px}
 .user b{font-size:13px}
-.burger{display:none}
+.burger{display:inline-flex;align-items:center}
+.crumbs{display:flex;align-items:center;flex-wrap:wrap;font-size:13px;color:#5F5F5F;min-width:0;padding:14px 24px 0}
+@media (max-width:900px){.crumbs{padding:12px 16px 0}}
+.crumbs a.home{display:inline-flex;color:#5F5F5F}.crumbs a.home svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.crumbs span::before{content:"/";margin:0 8px;color:#9A9A9A}
+.crumbs .cur{font-weight:600;color:#1F4E79}
 main{padding:20px 24px 48px;outline:none}
 .page-h{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
 .page-h h1{margin:0;font-size:22px;font-weight:500}
@@ -192,7 +197,7 @@ a.dsl{color:inherit;text-decoration:none}a.dsl:hover b{color:#C2410C;text-decora
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#1A2330;color:#fff;padding:10px 18px;border-radius:10px;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:90vw}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .pin{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;border:0;cursor:pointer;margin-left:6px;vertical-align:middle;flex:none}
-body.nopins .pin{display:none}
+.pin{display:none!important}
 .notes{background:#fff;border-left:1px solid var(--line);position:sticky;top:0;height:100vh;overflow:auto;width:344px;padding:16px;display:none}
 .app.notes-open .notes{display:block}
 .notes h2{font-size:15px}
@@ -307,7 +312,9 @@ input[type=checkbox]{accent-color:#FF7427}
 .top{flex-wrap:wrap;gap:8px}.top>*{white-space:nowrap}.tbtn{padding:6px 12px;font-size:12.5px}.tag{font-size:11.5px}
 .app.notes-open .user span{display:none}.app.notes-open .tag{padding:3px 8px;font-size:10.5px}.app.notes-open .top>.iconbtn+.tag+.sp{flex:0 1 0}
 .app.notes-open .top .tag{display:none}.amb .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.amb .steps3{grid-template-columns:1fr}.btn{white-space:nowrap}
-.filters{grid-template-columns:1.5fr 1.45fr 1.35fr .9fr auto}
+.filters{grid-template-columns:1.5fr 1.2fr 1.2fr .9fr .9fr auto}
+.filters:not(.coll) .fbtns{align-self:center}
+@media (max-width:900px){.filters:not(.coll){grid-template-columns:1fr 1fr}.filters .fbtns{grid-column:1/-1}}
 #rows{--x:0}.tbl th{white-space:normal;line-height:1.25}.tbl td,.tbl th{padding-left:10px;padding-right:10px}.tbl .acts .btn-sm{padding:5px 10px}
 .menu button[disabled]{opacity:.55;cursor:not-allowed}.menu button[disabled]:hover{background:none}
 .menu{min-width:250px}.menu button{white-space:nowrap}
@@ -326,7 +333,7 @@ button.kpi[aria-pressed=true]{border-color:#FF7427;box-shadow:inset 0 0 0 1px #F
 </style>
 </head>
 <body>
-<div class="app notes-open" id="app">
+<div class="app" id="app">
   <aside class="side" id="side" aria-label="Navegación del mockup">
     <div class="brand"><img class="logo" alt="SINPAD" src="data:image/png;base64,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"></div>
     <nav class="nav" id="nav"></nav>
@@ -337,15 +344,13 @@ button.kpi[aria-pressed=true]{border-color:#FF7427;box-shadow:inset 0 0 0 1px #F
       <button class="iconbtn burger" data-act="burger" aria-label="Mostrar u ocultar el menú"><i data-ic="menu"></i></button>
       <span class="tag">DATOS DE EJEMPLO</span>
       <span class="sp"></span>
-      <button class="tbtn" data-act="notes" id="btnNotes" aria-pressed="true">Notas de diseño</button>
-      <button class="tbtn" data-act="pins" id="btnPins" aria-pressed="true">Marcadores</button>
       <button class="btn btn-primary btn-sm" data-act="toast" data-msg="Mesa de ayuda (ejemplo): en producción abriría el formulario de incidencias"><i data-ic="headset"></i> Reportar incidencias (Mesa de ayuda)</button>
       <button class="bell" data-act="toast" data-msg="Notificaciones (ejemplo)" aria-label="Notificaciones, 3 sin leer"><i data-ic="bell"></i><span class="bdg">3</span></button>
       <div class="user"><b>USUARIO DIREH</b><span>DIREH · EJEMPLO</span></div>
     </header>
+    <nav class="crumbs" id="crumbs" aria-label="Ruta de navegación"></nav>
     <main id="view" tabindex="-1"></main>
   </div>
-  <aside class="notes" id="notes" aria-label="Notas de diseño"></aside>
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
@@ -428,12 +433,13 @@ const regBadge=d=>d.registro==='Pendiente'?'<span class="badge b-draft">Pendient
 const FONDES={'Amazonas|Bagua|Imaza':3,'Amazonas|Bagua|Bagua':1};
 
 /* ---------- Estado global ---------- */
-const S={route:'',wizD:null,wizP:null,f:{q:'',tipo:'',vig:'',pel:'',chip:''},sort:'desc',hl:null,prFor:'148',prBack:'',prModal:false,demoPr:false,ctab:'resumen',prList:[],
-  rect:{items:[],tipo:'',motivo:''},notesOpen:window.innerWidth>=1180,pins:true,pr0:true};
+const S={route:'',wizD:null,wizP:null,f:{q:'',tipo:'',vig:'',evt:'',pel:'',chip:''},sort:'desc',hl:null,prFor:'148',prBack:'',prModal:false,demoPr:false,ctab:'resumen',prList:[],
+  rect:{items:[],tipo:'',motivo:''},notesOpen:false,pins:true,pr0:true};
 
 /* ---------- Utilidades de UI ---------- */
 const IC={
  menu:'<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>',
+ home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>',
  bell:'<svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"/></svg>',
  headset:'<svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v5H5a1 1 0 0 1-1-1zM20 14h-3v5h2a1 1 0 0 0 1-1zM17 19c0 1.5-2 2-5 2"/></svg>',
  star:'<svg viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',
@@ -453,7 +459,12 @@ const IC={
 };
 const ico=n=>`<span class="ic" aria-hidden="true">${IC[n]}</span>`;
 const pin=n=>`<button class="pin" data-act="pin" data-n="${n}" aria-label="Ver nota ${n}">${n}</button>`;
-function pageHead(title,crumbs,actions){return `<div class="page-h"><h1>${title}</h1><div class="crumb">${crumbs.map(c=>`<span>${esc(c)}</span>`).join('')}</div>${actions?`<div class="pa">${actions}</div>`:''}</div>`;}
+let CRUMBS=[];
+function pageHead(title,crumbs,actions){CRUMBS=crumbs;return `<div class="page-h"><h1>${title}</h1>${actions?`<div class="pa">${actions}</div>`:''}</div>`;}
+function renderCrumbs(){
+  const list=CRUMBS.length?CRUMBS:['Resumen de la propuesta'];
+  $('#crumbs').innerHTML=`<a class="home" href="#/resumen" aria-label="Inicio">${IC.home}</a>`+list.map((c,i)=>`<span${i===list.length-1?' class="cur" aria-current="page"':''}>${esc(c)}</span>`).join('');
+}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2800);}
 function download(name,text){const b=new Blob(['\ufeff'+text],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
 function csvOf(keys){return 'DEPARTAMENTO,PROVINCIA,DISTRITO\n'+keys.map(k=>k.split('|').map(v=>'"'+v+'"').join(',')).join('\n');}
@@ -463,10 +474,10 @@ function groupKeys(keys){const g={};keys.forEach(k=>{const a=k.split('|');(g[a[0
 const NOTES={
  lista:[
   [1,'sen','N° correlativo y orden por D.S.','El N° numera las filas de la vista (1, 2, 3…) después de filtrar. Todos los dispositivos, declaratorias y prórrogas, van en una sola lista ordenada por N° de D.S. de forma descendente; clic en "Dispositivo legal" invierte el orden.'],
-  [2,'sen','Filtros arriba, indicadores que filtran','Primero los filtros (buscar, tipo de dispositivo, estado y peligro) y debajo las tarjetas: total de dispositivos, vigentes, por vencer, finalizados y declaratorias con prórrogas. Cada tarjeta también filtra. A la derecha, tres botones circulares (estilo del Módulo Consulta): Buscar, Limpiar filtros y Mostrar/ocultar filtros; oculto, se indica cuántos filtros siguen activos.'],
+  [2,'sen','Filtros arriba, indicadores que filtran','Primero los filtros (buscar, tipo de dispositivo, estado, evento y peligro) y debajo las tarjetas: total de dispositivos, vigentes, por vencer, finalizados y declaratorias con prórrogas. Cada tarjeta también filtra. A la derecha, tres botones circulares (estilo del Módulo Consulta): Buscar, Limpiar filtros y Mostrar/ocultar filtros; oculto, se indica cuántos filtros siguen activos.'],
   [3,'sen','Tipo de dispositivo legal','Cada fila indica si es DECLARATORIA o PRÓRROGA, y la prórroga dice de qué declaratoria es. Se puede filtrar por tipo.'],
   [4,'sen','Período y estado de cada D.S.','Cada fila muestra su propio período y estado; el término se calcula (inicio + plazo − 1). El estado queda en blanco mientras el registro no tenga todos sus distritos. "Finalizado" va en gris, no en rojo.'],
-  [5,'inf','Avance de cargas grandes','Un registro en curso de 707 distritos muestra "412 / 707" con barra de avance; se retoma desde el menú ⋮ ("Habilitar distritos") (informe 2.2).'],
+  [5,'inf','Avance de cargas grandes','Un registro en curso de 707 distritos muestra "412 / 707" con barra de avance; se retoma desde el menú ⋮ ("Editar datos" / "Confirmar registro") (informe 2.2).'],
   [6,'sen','Acciones y trazabilidad','El título del D.S. abre la consulta. El menú ⋮ ofrece "Trazabilidad": un modal con el árbol completo de la declaratoria y sus prórrogas, sombreando el dispositivo desde el que se abrió. "Registrar prórroga" aparece en la declaratoria sin prórrogas o en la última prórroga (vigente o finalizada); cada prórroga tiene Editar (con motivo y nueva versión) y Eliminar (solo la última, con alerta y motivo). Todo queda en el Historial de la Consulta.']
  ],
  'nueva-1':[
@@ -756,7 +767,7 @@ const kebab=(items,label)=>`<div class="acts"><button class="kebab" data-act="me
 const trazBtn=(id,n)=>`<button data-act="traz" data-pr="${id}" data-n="${n}" aria-haspopup="dialog">Trazabilidad</button>`;
 function rowActs(d){let items='';
   if(d.registro==='Pendiente'){const falta=d.nDS-d.cargados;
-    items=`<button data-act="deecont" data-step="1" aria-haspopup="dialog">Editar datos</button><button data-act="deecont" data-step="2" aria-haspopup="dialog">Habilitar distritos</button><button ${falta>0?'disabled title="Faltan '+falta+' distritos respecto al decreto"':'data-act="deecont" data-step="3"'}>Confirmar registro${falta>0?' <span class="muted" style="font-size:12px">(faltan '+falta+')</span>':''}</button>${trazBtn(d.id,0)}<button data-act="toast" data-msg="Abriría el PDF (ejemplo)">Ver PDF</button><hr><button class="danger" data-act="toast" data-msg="Anular registro pendiente: pediría motivo (ejemplo)">Anular registro pendiente…</button>`;}
+    items=`<button data-act="deecont" data-step="1" aria-haspopup="dialog">Editar datos</button><button ${falta>0?'disabled title="Faltan '+falta+' distritos respecto al decreto"':'data-act="deecont" data-step="3"'}>Confirmar registro${falta>0?' <span class="muted" style="font-size:12px">(faltan '+falta+')</span>':''}</button>${trazBtn(d.id,0)}<button data-act="toast" data-msg="Abriría el PDF (ejemplo)">Ver PDF</button><hr><button class="danger" data-act="toast" data-msg="Anular registro pendiente: pediría motivo (ejemplo)">Anular registro pendiente…</button>`;}
   /* Con prórrogas, "Registrar prórroga" pasa a la última prórroga (el último D.S. ingresado) */
   else items=`<button data-act="go" data-to="#/consulta/${d.id}">Consultar</button>`+(d.prorrogas?'':`<button data-act="prmodal" data-pr="${d.id}" aria-haspopup="dialog">Registrar prórroga</button>`)+trazBtn(d.id,0)+`<hr><button data-act="toast" data-msg="Ámbito exportado a Excel (ejemplo)">Exportar ámbito</button><button data-act="toast" data-msg="Abriría el PDF (ejemplo)">Ver PDF</button>`;
   return kebab(items,'Acciones de '+esc(d.num));
@@ -777,6 +788,7 @@ function rowOk(x){const f=S.f,q=norm(f.q),v=rowVig(x);
   if(f.tipo==='D'&&x.r)return false;
   if(f.tipo==='P'&&!x.r)return false;
   if(f.vig&&!(v&&v.k===f.vig))return false;
+  if(f.evt&&x.d.evento!==f.evt)return false;
   if(f.pel&&x.d.peligro!==f.pel)return false;
   if(f.chip==='vig'&&!(v&&v.k==='ok'))return false;
   if(f.chip==='soon'&&!(v&&v.soon))return false;
@@ -787,13 +799,13 @@ const tdl=r=>r?'<span class="tdl tdl-p">PRÓRROGA</span>':'<span class="tdl tdl-
 function rowsHTML(){
   const dir=S.sort==='asc'?1:-1;
   const list=listRows().filter(rowOk).sort((a,b)=>dir*(dsKey(rowNum(a))-dsKey(rowNum(b))));
-  if(!list.length)return `<tr><td colspan="8"><div class="empty"><h3>Sin resultados</h3><p>Pruebe con otros filtros.</p></div></td></tr>`;
+  if(!list.length)return `<tr><td colspan="9"><div class="empty"><h3>Sin resultados</h3><p>Pruebe con otros filtros.</p></div></td></tr>`;
   return list.map((x,i)=>{const d=x.d,r=x.r,v=rowVig(x),o=r||d,hl=S.hl&&S.hl.id===d.id&&S.hl.n===(r?r.n:0),np=d.prorrogas||0;
    const tag=hl?` <span class="prc">${S.hl.tag}</span>`:'';
-   const disp=r?`<b>${esc(r.num)}</b>${tag}${r.ver>1?` <span class="sub">v${r.ver}</span>`:''}<div class="sub">Prórroga N° ${r.n} de ${esc(d.num)}</div>`
+   const disp=r?`<b>${esc(r.num)}</b>${tag}${r.ver>1?` <span class="sub">v${r.ver}</span>`:''}`
      :(d.registro==='Pendiente'?`<b>${esc(d.num)}</b>`:`<a class="dsl" href="#/consulta/${d.id}" title="Consultar la declaratoria"><b>${esc(d.num)}</b></a>`)+tag+(np?`<div class="sub">${np} prórroga${np>1?'s':''}</div>`:'');
    const dist=r?`<b>${r.nd}</b>`:(d.registro==='Pendiente'?`<b>${d.cargados}</b> / ${d.nDS}<div class="mini"><i style="width:${Math.round(d.cargados*100/d.nDS)}%"></i></div>`:`<b>${d.ambito?d.ambito.length:d.nDS}</b>`);
-   return `<tr${hl?' class="hitrow"':''}><td class="n">${i+1}</td><td>${tdl(r)}</td><td>${disp}</td><td>${esc(d.evento)}<div class="sub">${esc(d.peligro)}</div></td><td>${fmt(parseISO(o.inicio))} → ${fmt(endOf(o))}<div class="sub">${o.plazo} días</div></td><td>${dist}</td><td>${v?vigBadge(v)+(v.soon?`<div class="sub">${v.soon}</div>`:''):''}</td><td class="r">${r?prActs(d,r):rowActs(d)}</td></tr>`;}).join('');
+   return `<tr${hl?' class="hitrow"':''}><td class="n">${i+1}</td><td>${disp}</td><td>${tdl(r)}</td><td>${esc(d.evento)}</td><td>${esc(d.peligro)}</td><td>${fmt(parseISO(o.inicio))} → ${fmt(endOf(o))}<div class="sub">${o.plazo} días</div></td><td>${dist}</td><td>${v?vigBadge(v)+(v.soon?`<div class="sub">${v.soon}</div>`:''):''}</td><td class="r">${r?prActs(d,r):rowActs(d)}</td></tr>`;}).join('');
 }
 function listaView(){
   const rows=listRows(),cnt={vig:0,soon:0,fin:0,pro:DEES.filter(d=>d.prorrogas).length};
@@ -801,15 +813,16 @@ function listaView(){
   const kpi=(v,n,l)=>`<button class="kpi" data-act="chip" data-v="${v}" aria-pressed="${S.f.chip===v}"><b>${n}</b>${l}</button>`;
   const sel=(id,fl,lab,opts)=>`<div><label class="l" for="${id}">${lab}</label><select class="in" id="${id}" data-fl="${fl}">${opts.map(o=>`<option value="${o[0]}" ${S.f[fl]===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></div>`;
   return pageHead('Declaratorias de estado de emergencia',['Declaratoria de estado de emergencia','Declaratorias'],'<button class="btn btn-primary" data-act="deemodal" aria-haspopup="dialog">+ Nueva declaratoria</button>')+
-  `<section class="card"><div class="filters${S.fcoll?' coll':''}">${S.fcoll?`<span class="muted fsum">Filtros ocultos${[S.f.q,S.f.tipo,S.f.vig,S.f.pel].filter(Boolean).length?' · '+[S.f.q,S.f.tipo,S.f.vig,S.f.pel].filter(Boolean).length+' activo(s)':''}</span>`:''}<div><label class="l" for="fq">Buscar decreto o prórroga</label><input class="in" id="fq" data-fl="q" placeholder="Ej. 148-2026" value="${esc(S.f.q)}"></div>
+  `<section class="card"><div class="filters${S.fcoll?' coll':''}">${S.fcoll?`<span class="muted fsum">Filtros ocultos${[S.f.q,S.f.tipo,S.f.vig,S.f.evt,S.f.pel].filter(Boolean).length?' · '+[S.f.q,S.f.tipo,S.f.vig,S.f.evt,S.f.pel].filter(Boolean).length+' activo(s)':''}</span>`:''}<div><label class="l" for="fq">Buscar decreto o prórroga</label><input class="in" id="fq" data-fl="q" placeholder="Ej. 148-2026" value="${esc(S.f.q)}"></div>
    ${sel('ft','tipo','Tipo de dispositivo legal',[['','Todos'],['D','Declaratoria'],['P','Prórroga']])}
    ${sel('fv','vig','Estado de declaratoria',[['','Todas'],['ok','Vigente'],['off','Finalizado']])}
+   ${sel('fe','evt','Evento',[['','Todos']].concat(EVENTOS.map(p=>[p,p])))}
    ${sel('fp','pel','Peligro',[['','Todos']].concat(PELIGROS.map(p=>[p,p])))}
    <div class="fbtns"><button class="ibtn" data-act="fsearch" title="Buscar" aria-label="Buscar">${ico('search')}</button><button class="ibtn" data-act="fclear" title="Limpiar filtros" aria-label="Limpiar filtros">${ico('refresh')}</button><button class="ibtn" data-act="ftog" title="${S.fcoll?'Mostrar filtros':'Ocultar filtros'}" aria-label="${S.fcoll?'Mostrar filtros':'Ocultar filtros'}" aria-expanded="${!S.fcoll}">${ico('updown')}</button></div></div>
   <div class="lbar"><span class="muted">Haga clic en un indicador para filtrar la tabla ${pin(2)}</span></div>
-  <div class="kpis k5">${kpi('',rows.length,'Total de dispositivos')}${kpi('vig',cnt.vig,'Vigentes')}${kpi('soon',cnt.soon,'Por vencer (≤ 7 días)')}${kpi('fin',cnt.fin,'Finalizados')}${kpi('pro',cnt.pro,'DEE con prórrogas')}</div>
+  <div class="kpis k5">${kpi('',rows.length,'Total')}${kpi('vig',cnt.vig,'Vigentes')}${kpi('soon',cnt.soon,'Por vencer (≤ 7 días)')}${kpi('fin',cnt.fin,'Finalizados')}${kpi('pro',cnt.pro,'DEE con prórrogas')}</div>
   <div class="lbar"><span class="muted">Orden: N° de D.S., ${S.sort==='desc'?'del más reciente al más antiguo':'del más antiguo al más reciente'}</span></div>
-  <div class="tblw"><table class="tbl" style="min-width:900px"><thead><tr><th class="n">N° ${pin(1)}</th><th>Tipo de dispositivo legal ${pin(3)}</th><th aria-sort="${S.sort==='desc'?'descending':'ascending'}"><button class="th-sort" data-act="sort" title="Invertir el orden">Dispositivo legal ${S.sort==='desc'?'▼':'▲'}</button></th><th>Evento / peligro</th><th>Período ${pin(4)}</th><th>Distritos ${pin(5)}</th><th>Estado de declaratoria</th><th class="r">Acciones ${pin(6)}</th></tr></thead><tbody id="rows">${rowsHTML()}</tbody></table></div>
+  <div class="tblw"><table class="tbl" style="min-width:900px"><thead><tr><th class="n">N° ${pin(1)}</th><th aria-sort="${S.sort==='desc'?'descending':'ascending'}"><button class="th-sort" data-act="sort" title="Invertir el orden">Dispositivo legal ${S.sort==='desc'?'▼':'▲'}</button></th><th>Tipo de dispositivo legal ${pin(3)}</th><th>Evento</th><th>Peligro</th><th>Período ${pin(4)}</th><th>Distritos ${pin(5)}</th><th>Estado de declaratoria</th><th class="r">Acciones ${pin(6)}</th></tr></thead><tbody id="rows">${rowsHTML()}</tbody></table></div>
   <div class="pager"><span>Mostrando ${rows.length} dispositivos legales de ejemplo</span><span>Filas por página: 20 · Página 1 de 1</span></div></section>`;
 }
 /* Trazabilidad: árbol completo de la declaratoria, sombreando el dispositivo desde el que se abrió */
@@ -896,17 +909,11 @@ function navHTML(r){
   `<a href="#/lista" class="sub ${g1?'on':''}">Declaratorias</a>`;
 }
 function notesKey(r,w){if(r==='nueva')return 'nueva-'+w.step;if(r==='prorroga-nueva')return w.step===1?'prorroga-1':(w.step===2?'prorroga-2':'nueva-3');return r;}
-function renderNotes(r){
-  const w=curWiz(),k=notesKey(r,w||{}),list=NOTES[k]||[];
-  const tag={inf:['Informe','s-inf'],sen:['Criterio senior','s-sen'],val:['Por validar','s-val']};
-  const done=w&&w.done;
-  $('#notes').innerHTML=`<h2>Notas de diseño</h2><p class="muted" style="font-size:12px">${list.length&&!done?'Lo que pide el <b>informe técnico</b> y lo que mejoramos por <b>criterio senior</b> en esta pantalla.':'Sin notas para esta vista.'}</p>`+(done?'':list.map(n=>`<div class="note" data-note="${n[0]}"><div class="hd"><span class="num">${n[0]}</span>${esc(n[2])}<span class="src ${tag[n[1]][1]}">${tag[n[1]][0]}</span></div><p>${esc(n[3])}</p></div>`).join(''));
-  const has=list.length>0&&!done;$('#app').classList.toggle('notes-open',S.notesOpen&&has);$('#btnNotes').hidden=!has;$('#btnNotes').setAttribute('aria-pressed',String(S.notesOpen));
-}
+function renderNotes(r){}
 function render(keepScroll){
   const h=location.hash.replace(/^#\/?/,'')||'resumen';const parts=h.split('/');const r=parts[0];
   S.route=ROUTES[r]?r:'resumen';
-  let html='';
+  let html='';CRUMBS=[];
   switch(S.route){
    case 'resumen':html=resumenView();break;
    case 'lista':html=listaView();break;
@@ -916,7 +923,7 @@ function render(keepScroll){
    case 'prorrogas':html=prorrogasView();break;
    case 'rectificar':html=rectView();break;
   }
-  const v=$('#view');v.innerHTML=html;$('#nav').innerHTML=navHTML(S.route);
+  const v=$('#view');v.innerHTML=html;$('#nav').innerHTML=navHTML(S.route);renderCrumbs();
   document.title=(ROUTES[S.route])+' · Mockup DEE SINPAD';
   renderNotes(S.route);
   renderPrModal(keepScroll);
@@ -966,7 +973,7 @@ document.addEventListener('click',e=>{
    case 'toast':toast(el.dataset.msg);break;
    case 'menu':{const m=$('.menu',el.parentNode),wasHidden=m.hidden;closeMenus();m.hidden=!wasHidden;e.stopPropagation();break;}
    case 'chip':S.f.chip=el.dataset.v;render(true);break;
-   case 'fclear':S.f={q:'',tipo:'',vig:'',pel:'',chip:''};render(true);break;
+   case 'fclear':S.f={q:'',tipo:'',vig:'',evt:'',pel:'',chip:''};render(true);break;
    case 'prmodal':{S.prFor=el.dataset.pr;S.prBack=location.hash||'#/lista';S.wizP=null;goTo('#/prorroga-nueva');break;}
    case 'prclose':closePrModal();break;
    case 'deecont':{S.wizD=null;const nw=getWiz('dee');Object.assign(nw.data,{numero:'151',evento:'Peligro inminente',peligro:'Huaico',inicio:'2026-10-16',plazo:'30',nDS:'707',url:'https://busquedas.elperuano.pe/dispositivo/NL/ejemplo-ds-151-2026-pcm'});nw.step=+el.dataset.step||2;nw.cont=true;goTo('#/nueva');break;}
@@ -1068,27 +1075,26 @@ function finishConfirm(w){
     S.created={id:'nuevo',num:titleOf(w),evento:w.data.evento,peligro:w.data.peligro,inicio:w.data.inicio,plazo:parseInt(w.data.plazo,10),nDS:parseInt(w.data.nDS,10),registro:'Confirmado',prorrogas:0,ambito:keys,ver:1,url:w.data.url,
       hist:[[fmt(HOY)+' 10:30','Usuario DIREH (ejemplo)','Inició el registro',titleOf(w)+' · plazo '+w.data.plazo+' días'],[fmt(HOY)+' 10:42','Usuario DIREH (ejemplo)','Cotejó contra el anexo del D.S.',keys.length+' de '+w.data.nDS+' según el decreto'],[fmt(HOY)+' 10:44','Usuario DIREH (ejemplo)','Confirmó el registro','Versión 1']]};
     const i=DEES.findIndex(d=>d.id==='nuevo');if(i>=0)DEES.splice(i,1);DEES.unshift(S.created);
-    if(S.prModal==='D'){S.prModal=false;S.wizD=null;S.hl={id:'nuevo',n:0,tag:'Nueva'};S.f={q:'',tipo:'',vig:'',pel:'',chip:''};S.sort='desc';
+    if(S.prModal==='D'){S.prModal=false;S.wizD=null;S.hl={id:'nuevo',n:0,tag:'Nueva'};S.f={q:'',tipo:'',vig:'',evt:'',pel:'',chip:''};S.sort='desc';
       toast(S.created.num+' registrado y confirmado. Queda en el historial.');if(location.hash==='#/lista')render(true);else location.hash='#/lista';
       setTimeout(()=>{const r=$('#rows tr.hitrow');if(r)r.scrollIntoView({block:'center',behavior:'smooth'});},60);return;}}
   else if(w.edit){const b=prBase(),r=b.pr[w.edit-1],ch=prDiff(w).map(c=>c.replace(/<[^>]+>/g,''));
     r.num=titleOf(w);r.plazo=parseInt(w.data.plazo,10);r.nd=w.sel.size;r.url=w.data.url;r.amb=Array.from(w.sel);r.ver=(r.ver||1)+1;
     const re=rechain(b,w.edit);
     addHist(b,'Editó la prórroga N° '+r.n,ch.join(' · ')+(re?' · se recalcularon las fechas de '+re+' prórroga(s) posterior(es)':'')+' · versión '+r.ver+' · motivo: '+w.data.motivo.trim());
-    S.prModal=false;S.wizP=null;S.hl={id:b.id,n:r.n,tag:'Editada'};S.f={q:'',tipo:'',vig:'',pel:'',chip:''};
+    S.prModal=false;S.wizP=null;S.hl={id:b.id,n:r.n,tag:'Editada'};S.f={q:'',tipo:'',vig:'',evt:'',pel:'',chip:''};
     toast('Prórroga N° '+r.n+' actualizada (versión '+r.ver+'). Queda en el historial.');if(location.hash==='#/lista')render(true);else location.hash='#/lista';return;}
   else{const b=prBase();b.pr=b.pr||[];
     b.pr.push({n:b.pr.length+1,num:titleOf(w),inicio:w.data.inicio,plazo:parseInt(w.data.plazo,10),nd:w.sel.size,url:w.data.url,amb:Array.from(w.sel)});b.prorrogas=b.pr.length;
     addHist(b,'Registró la prórroga N° '+b.pr.length,titleOf(w)+' · '+fmt(parseISO(w.data.inicio))+' al '+fmt(endOfISO(w.data.inicio,parseInt(w.data.plazo,10)))+' · '+w.sel.size+' distritos');
     if(b.id==='148')S.prList.push({n:titleOf(w),i:w.data.inicio,p:parseInt(w.data.plazo,10),nd:w.sel.size,s:'Confirmado'});
     /* Volver a la lista con el árbol abierto y la prórroga nueva resaltada */
-    w.done=true;S.hl={id:b.id,n:b.pr.length,tag:'Nueva'};S.f={q:'',tipo:'',vig:'',pel:'',chip:''};
+    w.done=true;S.hl={id:b.id,n:b.pr.length,tag:'Nueva'};S.f={q:'',tipo:'',vig:'',evt:'',pel:'',chip:''};
     if(S.prModal){S.prModal=false;S.wizP=null;}
     toast('Prórroga N° '+b.pr.length+' de la '+b.num+' registrada');if(location.hash==='#/lista')render(true);else location.hash='#/lista';
     setTimeout(()=>{const r=$('#rows tr.hitrow');if(r)r.scrollIntoView({block:'center',behavior:'smooth'});},60);return;}
   w.done=true;toast('Registro confirmado');render();
 }
-$('#btnPins').setAttribute('aria-pressed','true');
 document.querySelectorAll('[data-ic]').forEach(e=>{e.outerHTML=IC[e.dataset.ic];});
 render();
 })();
