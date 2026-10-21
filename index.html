@@ -454,7 +454,7 @@ const endOf=d=>endOfISO(d.inicio,d.plazo);
 function vig(d){
   const left=diffDays(HOY,endOf(d));
   if(left<0)return {k:'off',t:'Finalizado',left};
-  return {k:'ok',t:'Vigente',left,soon:left<=7?(left===0?'Vence hoy':'Vence en '+left+' día'+(left>1?'s':'')):''};
+  return {k:'ok',t:'Vigente',left,soon:left<=20?(left===0?'Vence hoy':'Vence en '+left+' día'+(left>1?'s':'')):''};
 }
 /* Prórrogas de ejemplo: encadenadas (cada una inicia el día siguiente al término anterior) */
 function chainPr(id,list){const d=dee(id);let s=addDays(endOf(d),1);
@@ -867,28 +867,29 @@ const tdl=r=>r?'<span class="tdl tdl-p">PRÓRROGA</span>':'<span class="tdl tdl-
 function rowsHTML(){
   const dir=S.sort==='asc'?1:-1;
   const list=listRows().filter(rowOk).sort((a,b)=>dir*(dsKey(rowNum(a))-dsKey(rowNum(b))));
-  if(!list.length)return `<tr><td colspan="9"><div class="empty"><h3>Sin resultados</h3><p>Pruebe con otros filtros.</p></div></td></tr>`;
+  if(!list.length)return `<tr><td colspan="10"><div class="empty"><h3>Sin resultados</h3><p>Pruebe con otros filtros.</p></div></td></tr>`;
   return list.map((x,i)=>{const d=x.d,r=x.r,v=rowVig(x),o=r||d,hl=S.hl&&S.hl.id===d.id&&S.hl.n===(r?r.n:0),np=d.prorrogas||0;
    const tag=hl?` <span class="prc">${S.hl.tag}</span>`:'';
    const disp=r?`<b>${esc(r.num)}</b>${tag}${r.ver>1?` <span class="sub">v${r.ver}</span>`:''}`
      :(d.registro==='Pendiente'?`<b>${esc(d.num)}</b>`:`<a class="dsl" href="#/consulta/${d.id}" title="Consultar la declaratoria"><b>${esc(d.num)}</b></a>`)+tag+(np?`<div class="sub">${np} prórroga${np>1?'s':''}</div>`:'');
+   const pd=r?`<b>${esc(r.n>1?d.pr[r.n-2].num:d.num)}</b>`:'<span class="tdl tdl-d">NUEVA</span>',pc=(d.pr||[])[r?r.n:0],con=pc?`<b>${esc(pc.num)}</b>`:'<span class="muted">—</span>';
    const dist=r?`<b>${r.nd}</b>`:(d.registro==='Pendiente'?`<b>${d.cargados}</b> / ${d.nDS}<div class="mini"><i style="width:${Math.round(d.cargados*100/d.nDS)}%"></i></div>`:`<b>${d.ambito?d.ambito.length:d.nDS}</b>`);
-   return `<tr${hl?' class="hitrow"':''}><td class="n">${i+1}</td><td>${disp}</td><td>${tdl(r)}</td><td>${esc(d.evento)}</td><td>${esc(d.peligro)}</td><td>${fmt(parseISO(o.inicio))} → ${fmt(endOf(o))}<div class="sub">${o.plazo} días</div></td><td>${dist}</td><td>${v?vigBadge(v)+(v.soon?`<div class="sub">${v.soon}</div>`:''):''}</td><td class="r">${r?prActs(d,r):rowActs(d)}</td></tr>`;}).join('');
+   return `<tr${hl?' class="hitrow"':''}><td class="n">${i+1}</td><td>${disp}</td><td>${pd}</td><td>${con}</td><td>${esc(d.evento)}</td><td>${esc(d.peligro)}</td><td>${fmt(parseISO(o.inicio))} → ${fmt(endOf(o))}<div class="sub">${o.plazo} días</div></td><td>${dist}</td><td>${v?vigBadge(v)+(v.soon?`<div class="sub">${v.soon}</div>`:''):''}</td><td class="r">${r?prActs(d,r):rowActs(d)}</td></tr>`;}).join('');
 }
 function listaView(){
   const rows=listRows(),cnt={vig:0,soon:0,fin:0,pro:DEES.filter(d=>d.prorrogas).length};
   rows.forEach(x=>{const v=rowVig(x);if(!v)return;if(v.k==='ok')cnt.vig++;else cnt.fin++;if(v.soon)cnt.soon++;});
   const kpi=(v,n,l)=>`<button class="kpi" data-act="chip" data-v="${v}" aria-pressed="${S.f.chip===v}"><b>${n}</b>${l}</button>`;
   const sel=(id,fl,lab,opts)=>`<div><label class="l" for="${id}">${lab}</label><select class="in" id="${id}" data-fl="${fl}">${opts.map(o=>`<option value="${o[0]}" ${S.f[fl]===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></div>`;
-  return pageHead('Declaratorias de estado de emergencia',['Declaratoria de estado de emergencia','Declaratorias'],'<button class="btn btn-primary" data-act="deemodal" aria-haspopup="dialog">+ Nueva declaratoria</button><button class="btn" style="background:#EEF0F2;border-color:#D9DDE1;color:#222;margin-left:8px" data-act="toast" data-msg="Listado exportado a Excel (ejemplo)" aria-label="Exportar a Excel"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="14" height="18" rx="2" fill="#33C481"/><rect x="8" y="3" width="14" height="6" rx="2" fill="#21A366"/><rect x="8" y="15" width="14" height="6" rx="2" fill="#107C41"/><rect x="2" y="6" width="12" height="12" rx="2" fill="#107C41"/><path d="M5.2 9.5h1.9l1 1.8 1-1.8H11L9.1 12l1.9 2.5H9.1l-1-1.8-1 1.8H5.2L7 12z" fill="#fff"/></svg>Exportar</button>')+
+  return pageHead('Declaratorias de estado de emergencia',['Declaratoria de estado de emergencia','Declaratorias'],'<button class="btn btn-primary" data-act="deemodal" aria-haspopup="dialog">+ Nueva declaratoria</button>')+
   `<section class="card"><div class="filters${S.fcoll?' coll':''}">${S.fcoll?`<span class="muted fsum">Filtros ocultos${[S.f.q,S.f.tipo,S.f.vig,S.f.evt,S.f.pel].filter(Boolean).length?' · '+[S.f.q,S.f.tipo,S.f.vig,S.f.evt,S.f.pel].filter(Boolean).length+' activo(s)':''}</span>`:''}<div><label class="l" for="fq">Buscar decreto o prórroga</label><input class="in" id="fq" data-fl="q" placeholder="Ej. 148-2026" value="${esc(S.f.q)}"></div>
    ${sel('ft','tipo','Tipo de dispositivo legal',[['','Todos'],['D','Declaratoria'],['P','Prórroga']])}
    ${sel('fv','vig','Estado de declaratoria',[['','Todas'],['ok','Vigente'],['off','Finalizado']])}
    ${sel('fe','evt','Evento',[['','Todos']].concat(EVENTOS.map(p=>[p,p])))}
    ${sel('fp','pel','Peligro',[['','Todos']].concat(PELIGROS.map(p=>[p,p])))}
    <div class="fbtns"><button class="ibtn" data-act="fsearch" title="Buscar" aria-label="Buscar">${ico('search')}</button><button class="ibtn" data-act="fclear" title="Limpiar filtros" aria-label="Limpiar filtros">${ico('refresh')}</button></div></div>
-  <div class="kpis k5">${kpi('',rows.length,'Total')}${kpi('vig',cnt.vig,'Vigentes')}${kpi('soon',cnt.soon,'Por vencer (≤ 7 días)')}${kpi('fin',cnt.fin,'Finalizados')}${kpi('pro',cnt.pro,'DEE con prórrogas')}</div>
-  <div class="tblw"><table class="tbl" style="min-width:900px"><thead><tr><th class="n">N° ${pin(1)}</th><th aria-sort="${S.sort==='desc'?'descending':'ascending'}"><button class="th-sort" data-act="sort" title="Invertir el orden">Dispositivo legal ${S.sort==='desc'?'▼':'▲'}</button></th><th>Tipo de dispositivo legal ${pin(3)}</th><th>Evento</th><th>Peligro</th><th>Período ${pin(4)}</th><th>Distritos ${pin(5)}</th><th>Estado de declaratoria</th><th class="r">Acciones ${pin(6)}</th></tr></thead><tbody id="rows">${rowsHTML()}</tbody></table></div>
+  <div class="kpis k5">${kpi('',rows.length,'Total')}${kpi('vig',cnt.vig,'Vigentes')}${kpi('soon',cnt.soon,'Por vencer (≤ 20 días)')}${kpi('fin',cnt.fin,'Finalizados')}${kpi('pro',cnt.pro,'DEE con prórrogas')}</div>
+  <div class="tblw"><table class="tbl" style="min-width:900px"><thead><tr><th class="n">N° ${pin(1)}</th><th aria-sort="${S.sort==='desc'?'descending':'ascending'}"><button class="th-sort" data-act="sort" title="Invertir el orden">Dispositivo legal ${S.sort==='desc'?'▼':'▲'}</button></th><th>Prórroga del D.S. o</th><th>Prorrogado con D.S.</th><th>Evento</th><th>Peligro</th><th>Período ${pin(4)}</th><th>Distritos ${pin(5)}</th><th>Estado de declaratoria</th><th class="r">Acciones ${pin(6)}</th></tr></thead><tbody id="rows">${rowsHTML()}</tbody></table></div>
   <div class="pager"><span>Mostrando ${rows.length} dispositivos legales de ejemplo</span><span>Filas por página: 20 · Página 1 de 1</span></div></section>`;
 }
 /* Trazabilidad: árbol completo de la declaratoria, sombreando el dispositivo desde el que se abrió */
