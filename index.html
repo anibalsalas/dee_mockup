@@ -529,14 +529,13 @@ const NOTES={
  ],
  'nueva-2':[
   [1,'inf','Carga masiva por archivo','Plantilla Excel/CSV por ubigeo, vista previa y reporte de errores antes de agregar (informe 2.4, primer punto).'],
-  [2,'sen','Una sola vía de carga','Se quitó "Seleccionar en lista": el ámbito se carga siempre desde el archivo (el anexo del D.S.), así no conviven dos formas de registrar ni se marca distrito por distrito. Las correcciones puntuales se hacen quitando distritos desde el panel.'],
+  [2,'sen','Una sola vía de carga','Se quitó "Seleccionar en lista": el ámbito se carga siempre desde el archivo (el anexo del D.S.), así no conviven dos formas de registrar ni se marca distrito por distrito. Las correcciones se hacen corrigiendo el archivo y volviéndolo a cargar.'],
   [3,'inf','Duplicados y omisiones','Un distrito no puede quedar dos veces. Las omisiones se detectan comparando con el N° declarado (informe 2.4, validaciones automáticas).'],
-  [4,'sen','Panel siempre visible','El ámbito cargado se ve agrupado por departamento y provincia con conteos; se puede quitar un distrito sin recargar nada.'],
-  [5,'sen','Guardar y retomar','"Guardar avance" en cualquier momento. Un D.S. grande deja de depender de terminarlo en una sola sentada. Hoy el ámbito se registra en la misma pantalla de los datos, con "Limpiar tabla" (botón azul, sin confirmación) junto a Guardar; aquí "Limpiar todo" pide confirmación.']
+  [5,'sen','Guardar y retomar','"Guardar avance" en cualquier momento. Un D.S. grande deja de depender de terminarlo en una sola sentada. Hoy el ámbito se registra en la misma pantalla de los datos.']
  ],
  'nueva-3':[
-  [1,'inf','Correspondencia con el D.S.','El informe exige preservar controles de integridad. Aquí: contador contra el decreto, resumen por provincia para cotejar con el anexo y exportación a Excel para el expediente.'],
-  [2,'sen','Confirmación consciente','Lista de verificación y advertencia clara de que el registro se bloquea, con la ruta de rectificación. Hoy solo hay un "¿Está seguro?".'],
+  [1,'inf','Correspondencia con el D.S.','El informe exige preservar controles de integridad. Aquí: el ámbito se carga desde el anexo del decreto en archivo y el reporte de validación evidencia duplicados e inexistentes.'],
+  [2,'sen','Confirmación consciente','Advertencia clara de que el registro se bloquea, con la ruta de rectificación. Hoy solo hay un "¿Está seguro?".'],
   [3,'sen','Efecto aguas abajo','Se avisa que al confirmar el ámbito queda disponible para otros módulos (p. ej. FONDES, según el informe 1.3).']
  ],
  consulta:[
@@ -560,10 +559,9 @@ const NOTES={
   [3,'sen','Pasos numerados','Tres pasos con estado (pendiente, actual, completo), en lugar de dos iconos sin contexto.']
  ],
  'prorroga-2':[
-  [1,'inf','Ámbito precargado','La prórroga parte con el ámbito de la DEE ya cargado: solo se quita lo que no se prorroga, desde el panel, o se importa el archivo con el ámbito prorrogado (informe: reducir operaciones manuales). Hoy la prórroga parte con la lista vacía y solo permite agregar distrito por distrito: no tiene ni "Agregar todos".'],
+  [1,'inf','Ámbito precargado','La prórroga parte con el ámbito de la DEE ya cargado: si no se prorroga todo el ámbito, se importa el archivo con el ámbito prorrogado (informe: reducir operaciones manuales). Hoy la prórroga parte con la lista vacía y solo permite agregar distrito por distrito: no tiene ni "Agregar todos".'],
   [2,'val','Regla por validar','Se limita a distritos de la DEE original. Para sumar otros distritos se registraría un nuevo decreto.'],
   [3,'sen','No guardar listas vacías','Hoy "Finalizar" muestra "¿Está seguro que desea guardar los distritos…?" aunque la lista esté vacía (0 of 0), y los dos botones del diálogo pesan igual. Aquí "Siguiente" se deshabilita sin distritos y la confirmación explica sus consecuencias.'],
-  [4,'sen','Panel para ajustar','El ámbito precargado se ve agrupado por departamento y provincia; cada distrito se puede quitar con un clic.']
  ],
  rectificar:[
   [1,'inf','Corrección desde el módulo','El informe 4.2 pide facilitar la edición y corrección de registros preservando controles. La rectificación es esa vía, con trazabilidad.'],
@@ -661,19 +659,6 @@ function step1HTML(w){
   ${isD?`<div class="alert a-warn" style="margin-top:14px"><span>⚠</span><span>${pin(5)} Se verificaría si ya existe una DEE vigente con el mismo peligro y distritos coincidentes (regla por validar).</span></div>`:''}
   <div class="wizfoot">${S.prModal?'<button class="btn btn-ghost" data-act="prclose">Cancelar</button>':`<button class="btn btn-ghost" data-act="go" data-to="${isD?'#/lista':(S.prBack||'#/prorrogas')}">Cancelar</button>`}<div class="r"><button class="btn btn-ghost" data-act="draft">Guardar avance</button><button class="btn btn-primary" data-act="next">Siguiente: ámbito geográfico →</button></div></div>`;
 }
-function counterHTML(w){
-  const n=w.sel.size,N=parseInt(w.data.nDS,10)||0;let cls='c-off',msg='Ingrese el N° de distritos según el D.S. en el paso 1.',pct=0;
-  if(N>0){pct=Math.min(100,Math.round(n*100/N));
-    if(n===N){cls='c-ok';msg='✓ Coincide con el decreto';}else if(n<N){cls='c-warn';msg='Faltan '+(N-n)+' distrito'+(N-n>1?'s':'')+' respecto al decreto';}else{cls='c-bad';msg='Sobran '+(n-N)+' distrito'+(n-N>1?'s':'')+' respecto al decreto';}}
-  return `<div class="counter ${cls}"><div class="big">${n} <small>/ ${N||'—'} según el D.S.</small></div><div style="margin-top:6px;font-weight:500">${msg}</div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
-}
-function panelHTML(w){
-  const g=groupKeys(Array.from(w.sel));const deps=Object.keys(g);
-  const body=deps.length?deps.map(d=>{const ps=Object.keys(g[d]);const tot=ps.reduce((a,p)=>a+g[d][p].length,0);
-   return `<details data-pk="${esc(d)}" ${w.open.has(d)?'open':''}><summary><b>${esc(d)}</b><span class="badge b-off">${tot} distritos</span></summary>${ps.map(p=>`<details class="in2" data-pk="${esc(d+'|'+p)}" ${w.open.has(d+'|'+p)?'open':''}><summary>${esc(p)} <span class="badge b-off">${g[d][p].length}</span></summary><div class="chipw">${g[d][p].map(x=>`<button class="chip" data-act="rm" data-k="${esc(key(d,p,x))}" title="Quitar ${esc(x)}">${esc(x)} ✕</button>`).join('')}</div></details>`).join('')}</details>`;}).join('')
-   :'<p class="muted" style="padding:12px">Aún no hay distritos. Marque departamentos, provincias o distritos, o importe un archivo Excel/CSV.</p>';
-  return `${counterHTML(w)}<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h3 style="margin:0">Ámbito seleccionado ${pin(4)}</h3><button class="btn-link" data-act="clear">Limpiar todo</button></div><div class="selbox">${body}</div>`;
-}
 function treeHTML(w){
   let h='';
   Object.keys(GEO).forEach(d=>{if(w.univ&&w.univ.indexOf(d)<0)return;
@@ -706,7 +691,7 @@ function filterTree(w){
 function setGroup(w,d,p,on){
   Object.keys(GEO[d]).forEach(pp=>{if(p&&pp!==p)return;GEO[d][pp].forEach(x=>{const k=key(d,pp,x);if(on)w.sel.add(k);else w.sel.delete(k);});});
 }
-function refreshAmbito(w){syncTree(w);const p=$('#panel');if(p)p.innerHTML=panelHTML(w);const cf=$('#confblock');if(cf)cf.innerHTML=confirmHTML(w);const cb=$('#confbtn');if(cb)cb.disabled=!confOk(w);}
+function refreshAmbito(w){syncTree(w);const cf=$('#confblock');if(cf)cf.innerHTML=confirmHTML(w);const cb=$('#confbtn');if(cb)cb.disabled=!confOk(w);}
 /* Importación Excel/CSV: archivo simulado de 86 filas (84 distritos de Amazonas + 1 duplicado + 1 código inexistente) */
 const XL_SIZE=25;
 let XL_ROWS=null;
@@ -760,7 +745,7 @@ function step2HTML(w){
   /* Única vía de carga del ámbito: importación Excel/CSV (se quitó "Seleccionar en lista") */
   const body=`<div class="amb stack"><div>${excelHTML(w)}${isP?'':`<p class="hint">${pin(1)} ${pin(2)}</p>`}</div></div>`;
   return `<h2>Ámbito geográfico ${isP?'':pin(3)}</h2>
-  ${isP?`<div class="alert a-info"><span>ℹ</span><span>Se precargó el ámbito de la ${esc(prBase().num)} (84 distritos${prBase().ambito?'':', ámbito de ejemplo'}). Si la prórroga no comprende a todos, quite los distritos desde el panel o importe el archivo con el ámbito prorrogado. Solo pueden incluirse distritos del decreto original. ${pin(1)}</span></div>`:''}
+  ${isP?`<div class="alert a-info"><span>ℹ</span><span>Se precargó el ámbito de la ${esc(prBase().num)} (84 distritos${prBase().ambito?'':', ámbito de ejemplo'}). Si la prórroga no comprende a todos, importe el archivo con el ámbito prorrogado. Solo pueden incluirse distritos del decreto original. ${pin(1)}</span></div>`:''}
   ${body}
   <div id="confblock">${confirmHTML(w)}</div>
   <div class="wizfoot"><button class="btn btn-ghost" data-act="prev">← Atrás</button><div class="r">${w.edit?'':'<button class="btn btn-ghost" data-act="draft">Guardar avance</button>'}<button class="btn btn-primary" id="confbtn" data-act="confirm" ${confOk(w)?'':'disabled'}>${w.edit?'Guardar cambios':'Confirmar registro'}</button></div></div>`;
@@ -798,18 +783,18 @@ function resumenView(){
    <section class="card"><h2>Recorrido sugerido (7 minutos)</h2><ol class="tight">
     <li>${go('#/lista','Lista de declaratorias')}: indicadores, tipo de dispositivo, trazabilidad y registro pendiente de 707 distritos.</li>
     <li>${go('#/nueva','Nueva declaratoria')} → datos con término calculado.</li>
-    <li>Paso 2: <b>Importar Excel/CSV</b> (simular la carga), revisar el reporte de errores y quitar un distrito desde el panel.</li>
-    <li>Paso 3: contador contra el D.S., cotejo y confirmación.</li>
+    <li>Paso 2: <b>Importar Excel/CSV</b> (simular la carga), revisar el reporte de errores de validación.</li>
+    <li>Paso 3: confirmación del registro.</li>
     <li>${go('#/consulta/148','Consulta')}: ámbito agrupado, historial.</li>
     <li>${go('#/rectificar','Rectificación')}: corrección con motivo y bloqueo informado.</li>
     <li>${go('#/prorrogas','Prórrogas')} y ${go('#/prorroga-nueva','nueva prórroga')} con ámbito precargado.</li></ol></section></div>
   <section class="card"><h2>Qué pide el informe y cómo se resuelve</h2><div class="tblw"><table class="tbl matrix" style="min-width:760px"><thead><tr><th>Pedido del informe (2.4)</th><th>Propuesta</th><th>Pantalla</th></tr></thead><tbody>
    <tr><td>Incorporación masiva por archivo estructurado</td><td>Plantilla por ubigeo, vista previa, reporte de errores (duplicados, códigos inexistentes).</td><td>${go('#/nueva','Paso 2 · Importar')}</td></tr>
-   <tr><td>Selección múltiple de departamentos, provincias y distritos</td><td>Se resuelve con el archivo: el anexo completo entra de una vez y el panel lo agrupa por departamento y provincia con contadores. <b>Por validar con DIREH:</b> se retiró la selección manual en lista.</td><td>${go('#/nueva','Paso 2 · Importar')}</td></tr>
-   <tr><td>Selección total por provincia con exclusión directa</td><td>Importar el ámbito y quitar los distritos sobrantes desde el panel, sin “agregar todos y luego eliminar”. <b>Por validar con DIREH:</b> hoy la exclusión es por distrito, no por provincia.</td><td>${go('#/nueva','Paso 2')}</td></tr>
+   <tr><td>Selección múltiple de departamentos, provincias y distritos</td><td>Se resuelve con el archivo: el anexo completo entra de una vez. <b>Por validar con DIREH:</b> se retiró la selección manual en lista.</td><td>${go('#/nueva','Paso 2 · Importar')}</td></tr>
+   <tr><td>Selección total por provincia con exclusión directa</td><td>Importar el archivo con el ámbito ya depurado, sin “agregar todos y luego eliminar”. <b>Por validar con DIREH:</b> hoy la exclusión es por distrito, no por provincia.</td><td>${go('#/nueva','Paso 2')}</td></tr>
    <tr><td>Edición y eliminación directa antes de la validación definitiva</td><td>Registro pendiente editable y retomable; tras confirmar, rectificación controlada con motivo.</td><td>${go('#/lista','Lista')} · ${go('#/rectificar','Rectificación')}</td></tr>
    <tr><td>Validaciones de duplicidad u omisión</td><td>Duplicado imposible por diseño; omisiones por contador contra el N° de distritos del D.S.</td><td>${go('#/nueva','Pasos 2 y 3')}</td></tr>
-   <tr><td>Correspondencia entre el ámbito registrado y el D.S.</td><td>Cotejo por provincia, checklist y exportación para el expediente.</td><td>${go('#/nueva','Paso 3')}</td></tr></tbody></table></div></section>
+   <tr><td>Correspondencia entre el ámbito registrado y el D.S.</td><td>Reporte de validación del archivo antes de incorporar el ámbito. <b>Por validar:</b> se retiró el contador contra el N° del D.S. y el cotejo.</td><td>${go('#/nueva','Paso 3')}</td></tr></tbody></table></div></section>
   <div class="cols2" style="margin-top:16px">
    <section class="card"><h2>Mejoras por criterio técnico (otras pantallas)</h2><ul class="tight">
     <li>Estado de declaratoria (Vigente/Finalizado) separado del estado de registro (Pendiente/Confirmado) (hoy un registro pendiente aparece “VIGENTE”); la lista muestra solo el estado de declaratoria y el de registro se consulta en el detalle.</li>
@@ -1059,14 +1044,6 @@ document.addEventListener('click',e=>{
    case 'tab2':if(w){w.tab=el.dataset.v;render(true);}break;
    case 'expand':$$('#tree details').forEach(x=>x.open=true);break;
    case 'collapse':$$('#tree details').forEach(x=>x.open=false);break;
-   case 'rm':if(w){w.sel.delete(el.dataset.k);refreshAmbito(w);}break;
-   case 'clear':if(w&&w.sel.size&&window.confirm('¿Quitar los '+w.sel.size+' distritos seleccionados?')){w.sel.clear();refreshAmbito(w);}break;
-   case 'tpl':download('plantilla-ambito-dee.csv','UBIGEO,DEPARTAMENTO,PROVINCIA,DISTRITO\n010101,Amazonas,Chachapoyas,Chachapoyas');break;
-   case 'xl':if(w){w.xl={tab:'todos',page:0};render(true);}break;
-   case 'xlclear':if(w){w.xl=false;render(true);}break;
-   case 'xltab':case 'xlpage':if(w&&w.xl){if(a==='xltab'){w.xl.tab=el.dataset.v;w.xl.page=0;}else w.xl.page=Math.max(0,w.xl.page+(+el.dataset.v));const r=$('#xlres');if(r)r.innerHTML=xlResultHTML(w);}break;
-   case 'xlobs':if(w){const rows=xlRows().filter(r=>xlStat(r,w)!=='ok');download('observaciones-importacion.csv','FILA,REGION,PROVINCIA,DISTRITO,UBIGEO,OBSERVACION\n'+rows.map(r=>[r.fila,r.reg,r.prov,r.dist,r.ubi,XL_BADGE[xlStat(r,w)][1]].map(v=>'"'+v+'"').join(',')).join('\n'));}break;
-   case 'addxl':if(w){const n=xlRows().filter(r=>xlStat(r,w)==='ok').length;xlRows().forEach(r=>{if(r.k&&!r.dup)w.sel.add(r.k);});refreshAmbito(w);const r=$('#xlres');if(r)r.innerHTML=xlResultHTML(w);toast(n+' distritos agregados desde el archivo');}break;
    case 'expSel':if(w)download('ambito-seleccionado.csv',csvOf(Array.from(w.sel)));break;
    case 'confirm':if(w&&!el.disabled)openConfirm(w);break;
    case 'addrect':{const sel=$('#rd');if(sel.value){S.rect.items.push(sel.value);render(true);}break;}
