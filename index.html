@@ -533,8 +533,7 @@ const NOTES={
  'nueva-2':[
   [1,'inf','Carga masiva por archivo','Plantilla Excel/CSV por ubigeo, vista previa y reporte de errores antes de agregar (informe 2.4, primer punto).'],
   [2,'sen','Una sola vía de carga','Se quitó "Seleccionar en lista": el ámbito se carga siempre desde el archivo (el anexo del D.S.), así no conviven dos formas de registrar ni se marca distrito por distrito. Las correcciones se hacen corrigiendo el archivo y volviéndolo a cargar.'],
-  [3,'inf','Duplicados y omisiones','Un distrito no puede quedar dos veces. Las omisiones se detectan comparando con el N° declarado (informe 2.4, validaciones automáticas).'],
-  [5,'sen','Guardar y retomar','"Guardar avance" en cualquier momento. Un D.S. grande deja de depender de terminarlo en una sola sentada. Hoy el ámbito se registra en la misma pantalla de los datos.']
+  [3,'inf','Duplicados y omisiones','Un distrito no puede quedar dos veces. Las omisiones se detectan comparando con el N° declarado (informe 2.4, validaciones automáticas).']
  ],
  'nueva-3':[
   [1,'inf','Correspondencia con el D.S.','El informe exige preservar controles de integridad. Aquí: el ámbito se carga desde el anexo del decreto en archivo y el reporte de validación evidencia duplicados e inexistentes.'],
@@ -660,7 +659,7 @@ function step1HTML(w){
    <div><label class="l" for="f-nDS">N° de distritos según el D.S. * ${isD?pin(4):''}</label><input class="in" id="f-nDS" data-f="nDS" inputmode="numeric" value="${esc(d.nDS)}" ${w.errs.nDS?'aria-invalid="true"':''}><div class="hint">Dato de control para verificar el ámbito cargado. Un D.S. puede incluir cientos de distritos (p. ej. 707).</div>${fieldErr(w,'nDS')}</div>
   </div>
   ${isD?`<div class="alert a-warn" style="margin-top:14px"><span>⚠</span><span>${pin(5)} Se verificaría si ya existe una DEE vigente con el mismo peligro y distritos coincidentes (regla por validar).</span></div>`:''}
-  <div class="wizfoot">${S.prModal?'<button class="btn btn-ghost" data-act="prclose">Cancelar</button>':`<button class="btn btn-ghost" data-act="go" data-to="${isD?'#/lista':(S.prBack||'#/prorrogas')}">Cancelar</button>`}<div class="r"><button class="btn btn-ghost" data-act="draft">Guardar avance</button><button class="btn btn-primary" data-act="next">Siguiente: ámbito geográfico →</button></div></div>`;
+  <div class="wizfoot">${S.prModal?'<button class="btn btn-ghost" data-act="prclose">Cancelar</button>':`<button class="btn btn-ghost" data-act="go" data-to="${isD?'#/lista':(S.prBack||'#/prorrogas')}">Cancelar</button>`}<div class="r"><button class="btn btn-primary" data-act="next">Siguiente: ámbito geográfico →</button></div></div>`;
 }
 function treeHTML(w){
   let h='';
@@ -769,7 +768,7 @@ function step2HTML(w){
   ${isP?`<div class="alert a-info"><span>ℹ</span><span>Se precargó el ámbito de la ${esc(prBase().num)} (84 distritos${prBase().ambito?'':', ámbito de ejemplo'}). Si la prórroga no comprende a todos, importe el archivo con el ámbito prorrogado. Solo pueden incluirse distritos del decreto original. ${pin(1)}</span></div>`:''}
   ${body}
   <div id="confblock">${confirmHTML(w)}</div>
-  ${w.confirmed?'':`<div class="wizfoot"><button class="btn btn-ghost" data-act="prev">← Atrás</button><div class="r">${w.edit?'':'<button class="btn btn-ghost" data-act="draft">Guardar avance</button>'}${w.edit?`<button class="btn btn-primary" id="confbtn" data-act="confirm" ${confOk(w)?'':'disabled'}>Guardar cambios</button>`:''}</div></div>`}`;
+  ${w.confirmed?'':`<div class="wizfoot"><button class="btn btn-ghost" data-act="prev">← Atrás</button><div class="r">${w.edit?`<button class="btn btn-primary" id="confbtn" data-act="confirm" ${confOk(w)?'':'disabled'}>Guardar cambios</button>`:''}</div></div>`}`;
 }
 function confirmHTML(w){
   const isD=w.mode==='dee',t=termOf(w),n=w.sel.size,N=parseInt(w.data.nDS,10)||0,match=n===N&&n>0;
@@ -1061,7 +1060,6 @@ document.addEventListener('click',e=>{
    case 'prev':if(w){w.step=Math.max(1,w.step-1);render();}break;
    case 'next':if(w){
       if(w.step===1){w.errs=validate(w);if(Object.keys(w.errs).length){render(true);const first=$('[aria-invalid="true"]');if(first)first.focus();return;}w.step=2;render();}}break;
-   case 'draft':toast('Avance guardado (ejemplo). Podrá retomarlo desde la lista.');break;
    case 'tab2':if(w){w.tab=el.dataset.v;render(true);}break;
    case 'expand':$$('#tree details').forEach(x=>x.open=true);break;
    case 'collapse':$$('#tree details').forEach(x=>x.open=false);break;
