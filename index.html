@@ -872,7 +872,7 @@ function rowsHTML(){
    const tag=hl?` <span class="prc">${S.hl.tag}</span>`:'';
    const disp=r?`<b>${esc(r.num)}</b>${tag}${r.ver>1?` <span class="sub">v${r.ver}</span>`:''}`
      :(d.registro==='Pendiente'?`<b>${esc(d.num)}</b>`:`<a class="dsl" href="#/consulta/${d.id}" title="Consultar la declaratoria"><b>${esc(d.num)}</b></a>`)+tag+(np?`<div class="sub">${np} prórroga${np>1?'s':''}</div>`:'');
-   const pd=r?`<b>${esc(r.n>1?d.pr[r.n-2].num:d.num)}</b>`:'<span class="tdl tdl-d">NUEVA</span>',pc=(d.pr||[])[r?r.n:0],con=pc?`<b>${esc(pc.num)}</b>`:'<span class="muted">—</span>';
+   const pd=r?`${esc(r.n>1?d.pr[r.n-2].num:d.num)}`:'<span class="tdl tdl-d">NUEVA</span>',pc=(d.pr||[])[r?r.n:0],con=pc?esc(pc.num):'<span class="muted">—</span>';
    const dist=r?`<b>${r.nd}</b>`:(d.registro==='Pendiente'?`<b>${d.cargados}</b> / ${d.nDS}<div class="mini"><i style="width:${Math.round(d.cargados*100/d.nDS)}%"></i></div>`:`<b>${d.ambito?d.ambito.length:d.nDS}</b>`);
    return `<tr${hl?' class="hitrow"':''}><td class="n">${i+1}</td><td>${disp}</td><td>${pd}</td><td>${con}</td><td>${esc(d.evento)}</td><td>${esc(d.peligro)}</td><td>${fmt(parseISO(o.inicio))} → ${fmt(endOf(o))}<div class="sub">${o.plazo} días</div></td><td>${dist}</td><td>${v?vigBadge(v)+(v.soon?`<div class="sub">${v.soon}</div>`:''):''}</td><td class="r">${r?prActs(d,r):rowActs(d)}</td></tr>`;}).join('');
 }
