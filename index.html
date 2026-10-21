@@ -602,7 +602,7 @@ function prDiff(w){
   return c;
 }
 const MIN_MOT=15;
-function confOk(w){const N=parseInt(w.data.nDS,10)||0;if(!(w.chk&&w.sel.size===N&&N>0))return false;
+function confOk(w){
   return !w.edit||(prDiff(w).length>0&&(w.data.motivo||'').trim().length>=MIN_MOT);}
 /* Trazabilidad: cada acción sobre una prórroga queda en el historial de la DEE */
 function addHist(d,accion,detalle){const n=new Date();
@@ -745,7 +745,7 @@ function xlResultHTML(w){
   ${list.slice(from,from+XL_SIZE).map(r=>{const b=XL_BADGE[xlStat(r,w)];return `<tr><td class="n">${r.fila}</td><td>${esc(r.reg.toUpperCase())}</td><td>${esc(r.prov.toUpperCase())}</td><td>${esc(r.dist.toUpperCase())}</td><td class="xu">${r.ubi}</td><td><span class="badge ${b[0]}">${b[1]}</span></td></tr>`;}).join('')||'<tr><td colspan="6" class="muted" style="text-align:center;padding:18px">Sin registros en esta categoría.</td></tr>'}
   </tbody></table></div>
   <div class="xpg"><span>${list.length?from+1:0} – ${Math.min(from+XL_SIZE,list.length)} de ${list.length}</span><button class="btn btn-ghost btn-sm" data-act="xlpage" data-v="-1" aria-label="Página anterior" ${pg===0?'disabled':''}>‹</button><span>${pg+1} / ${pages}</span><button class="btn btn-ghost btn-sm" data-act="xlpage" data-v="1" aria-label="Página siguiente" ${pg>=pages-1?'disabled':''}>›</button></div>
-  <div class="xfoot"><button class="btn btn-ghost" data-act="xlobs" ${obs?'':'disabled'}>Descargar observaciones (${obs})</button><button class="btn btn-primary" data-act="addxl" ${c.ok&&!(w.univ&&w.univ.indexOf('Amazonas')<0)?'':'disabled'}>Agregar ${c.ok} distritos</button></div>`;
+  `;
 }
 function excelHTML(w){
   const x=w.xl;
@@ -758,7 +758,7 @@ function excelHTML(w){
 function step2HTML(w){
   const isP=w.mode==='prorroga';
   /* Única vía de carga del ámbito: importación Excel/CSV (se quitó "Seleccionar en lista") */
-  const body=`<div class="amb stack"><div>${excelHTML(w)}${isP?'':`<p class="hint">${pin(1)} ${pin(2)}</p>`}</div><div class="sticky" id="panel">${panelHTML(w)}</div></div>`;
+  const body=`<div class="amb stack"><div>${excelHTML(w)}${isP?'':`<p class="hint">${pin(1)} ${pin(2)}</p>`}</div></div>`;
   return `<h2>Ámbito geográfico ${isP?'':pin(3)}</h2>
   ${isP?`<div class="alert a-info"><span>ℹ</span><span>Se precargó el ámbito de la ${esc(prBase().num)} (84 distritos${prBase().ambito?'':', ámbito de ejemplo'}). Si la prórroga no comprende a todos, quite los distritos desde el panel o importe el archivo con el ámbito prorrogado. Solo pueden incluirse distritos del decreto original. ${pin(1)}</span></div>`:''}
   ${body}
@@ -771,11 +771,9 @@ function confirmHTML(w){
   const editBox=w.edit?`<h3 style="margin-top:16px">Cambios respecto a la versión registrada</h3>${ch.length?`<ul class="chg">${ch.map(c=>`<li>${c}</li>`).join('')}</ul>`:'<p class="muted">Aún no hay cambios. Modifique los datos del decreto o el ámbito.</p>'}
    ${post&&ch.some(c=>c.indexOf('Plazo')===0)?`<div class="alert a-warn"><span>⚠</span><span>Se recalcularán las fechas de ${post} prórroga${post>1?'s':''} posterior${post>1?'es':''} (cada una inicia el día siguiente al término anterior).</span></div>`:''}
    <div style="margin-top:12px"><label class="l" for="f-motivo">Motivo de la edición * (mínimo ${MIN_MOT} caracteres)</label><textarea class="in" id="f-motivo" data-f="motivo" rows="3" placeholder="Ej. Se corrigió el plazo según fe de erratas publicada en El Peruano">${esc(w.data.motivo||'')}</textarea><div class="hint">Queda en el historial con usuario, fecha y hora, junto con los cambios.</div></div>`:'';
-  return `<div style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px"><h3 style="margin-top:0">Verificación antes de confirmar</h3>
-   <ul class="tight" style="list-style:none;padding:0"><li class="rec-ok">✓ Datos del decreto completos · término ${t?fmt(t):'—'}</li><li class="${match?'rec-ok':'rec-bad'}">${match?'✓':'✗'} Distritos cargados: ${n} de ${N} según el D.S.</li></ul>
-   <label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" id="chk" ${w.chk?'checked':''}><span>Cotejé el ámbito cargado con el anexo del decreto publicado.</span></label>${editBox}
+  return `<div style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px">${editBox}
    <div class="alert a-warn" style="margin-top:14px"><span>⚠</span><span>${w.edit?'Al guardar se crea una <b>nueva versión</b> de la prórroga; la anterior y el motivo quedan en el historial de la declaratoria.':`Al confirmar, el registro se bloquea${isD?' y el ámbito queda disponible para otros módulos (p. ej. FONDES)':''}. Cualquier cambio posterior se hará mediante una <b>rectificación</b> con motivo, que queda en el historial.`}</span></div>
-   ${match?'':'<p class="err" style="text-align:right">No se puede confirmar mientras el ámbito no coincida con el N° de distritos del decreto. Corrija el ámbito o el dato de control.</p>'}</div>`;
+</div>`;
 }
 function wizView(mode){
   const w=getWiz(mode),isD=mode==='dee';
