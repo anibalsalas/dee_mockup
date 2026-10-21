@@ -332,9 +332,11 @@ input[type=checkbox]{accent-color:#FF7427}
 /* Lista: indicadores clicables, N° y orden */
 button.kpi{font-family:inherit;text-align:left;cursor:pointer;width:100%}
 button.kpi:hover{border-color:#F3B58C}
-@media (min-width:901px){.kpis.k5{grid-template-columns:repeat(5,minmax(0,1fr))}}
-.kpis.k5 .kpi:nth-child(4)::before{background-color:#EEF0F3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B727F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 20V11M12 20V4M19 20v-6'/%3E%3C/svg%3E")}
-.kpis.k5 .kpi:nth-child(5)::before{background-color:#FFE2E2;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 20V11M12 20V4M19 20v-6'/%3E%3C/svg%3E")}
+@media (min-width:901px){.kpis.k5{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.kpis.k5 .kpi:nth-child(1)::before{background-color:#DBFCE7;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 20V11M12 20V4M19 20v-6'/%3E%3C/svg%3E")}
+.kpis.k5 .kpi:nth-child(2)::before{background-color:#FFEDD6;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23EA580C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 20V11M12 20V4M19 20v-6'/%3E%3C/svg%3E")}
+.kpis.k5 .kpi:nth-child(3)::before{background-color:#EEF0F3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B727F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 20V11M12 20V4M19 20v-6'/%3E%3C/svg%3E")}
+.kpis.k5 .kpi:nth-child(4)::before{background-color:#FFE2E2;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 20V11M12 20V4M19 20v-6'/%3E%3C/svg%3E")}
 button.kpi[aria-pressed=true]{border-color:#FF7427;box-shadow:inset 0 0 0 1px #FF7427;background:#FFFBF7}
 .lbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0 10px}
 .th-sort{background:none;border:0;font:inherit;color:inherit;cursor:pointer;padding:0;display:inline-flex;gap:4px;align-items:center}
@@ -516,7 +518,7 @@ function groupKeys(keys){const g={};keys.forEach(k=>{const a=k.split('|');(g[a[0
 const NOTES={
  lista:[
   [1,'sen','N° correlativo y orden por D.S.','El N° numera las filas de la vista (1, 2, 3…) después de filtrar. Todos los dispositivos, declaratorias y prórrogas, van en una sola lista ordenada por N° de D.S. de forma descendente; clic en "Dispositivo legal" invierte el orden.'],
-  [2,'sen','Filtros arriba, indicadores que filtran','Primero los filtros (buscar, tipo de dispositivo, estado, evento y peligro) y debajo las tarjetas: total de dispositivos, vigentes, por vencer, finalizados y declaratorias con prórrogas. Cada tarjeta también filtra. A la derecha, tres botones circulares (estilo del Módulo Consulta): Buscar, Limpiar filtros y Mostrar/ocultar filtros; oculto, se indica cuántos filtros siguen activos.'],
+  [2,'sen','Filtros arriba, indicadores que filtran','Primero los filtros (buscar, tipo de dispositivo, estado, evento y peligro) y debajo las tarjetas: vigentes, por vencer, finalizados y declaratorias con prórrogas. Cada tarjeta también filtra. A la derecha, tres botones circulares (estilo del Módulo Consulta): Buscar, Limpiar filtros y Mostrar/ocultar filtros; oculto, se indica cuántos filtros siguen activos.'],
   [3,'sen','Tipo de dispositivo legal','Cada fila indica si es DECLARATORIA o PRÓRROGA, y la prórroga dice de qué declaratoria es. Se puede filtrar por tipo.'],
   [4,'sen','Período y estado de cada D.S.','Cada fila muestra su propio período y estado; el término se calcula (inicio + plazo − 1). El estado queda en blanco mientras el registro no tenga todos sus distritos. "Finalizado" va en gris, no en rojo.'],
   [5,'inf','Avance de cargas grandes','Un registro en curso de 707 distritos muestra "412 / 707" con barra de avance; se retoma desde el menú ⋮ ("Editar datos" / "Confirmar registro") (informe 2.2).'],
@@ -889,7 +891,7 @@ function listaView(){
    ${sel('fp','pel','Peligro',[['','Todos']].concat(PELIGROS.map(p=>[p,p])))}
    <div class="fbtns"><button class="ibtn" data-act="fsearch" title="Buscar" aria-label="Buscar">${ico('search')}</button><button class="ibtn" data-act="fclear" title="Limpiar filtros" aria-label="Limpiar filtros">${ico('refresh')}</button></div></div>
   <div class="lbar"><span class="muted">Haga clic en un indicador para filtrar la tabla ${pin(2)}</span></div>
-  <div class="kpis k5">${kpi('',rows.length,'Total')}${kpi('vig',cnt.vig,'Vigentes')}${kpi('soon',cnt.soon,'Por vencer (≤ 7 días)')}${kpi('fin',cnt.fin,'Finalizados')}${kpi('pro',cnt.pro,'DEE con prórrogas')}</div>
+  <div class="kpis k5">${kpi('vig',cnt.vig,'Vigentes')}${kpi('soon',cnt.soon,'Por vencer (≤ 7 días)')}${kpi('fin',cnt.fin,'Finalizados')}${kpi('pro',cnt.pro,'DEE con prórrogas')}</div>
   <div class="lbar"><span class="muted">Orden: N° de D.S., ${S.sort==='desc'?'del más reciente al más antiguo':'del más antiguo al más reciente'}</span></div>
   <div class="tblw"><table class="tbl" style="min-width:900px"><thead><tr><th class="n">N° ${pin(1)}</th><th aria-sort="${S.sort==='desc'?'descending':'ascending'}"><button class="th-sort" data-act="sort" title="Invertir el orden">Dispositivo legal ${S.sort==='desc'?'▼':'▲'}</button></th><th>Tipo de dispositivo legal ${pin(3)}</th><th>Evento</th><th>Peligro</th><th>Período ${pin(4)}</th><th>Distritos ${pin(5)}</th><th>Estado de declaratoria</th><th class="r">Acciones ${pin(6)}</th></tr></thead><tbody id="rows">${rowsHTML()}</tbody></table></div>
   <div class="pager"><span>Mostrando ${rows.length} dispositivos legales de ejemplo</span><span>Filas por página: 20 · Página 1 de 1</span></div></section>`;
