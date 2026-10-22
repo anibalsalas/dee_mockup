@@ -752,12 +752,12 @@ function agregadosHTML(w){
 }
 function excelHTML(w){
   const x=w.xlFile;
-  if(w.confirmed)return `<div class="alert a-ok" role="status"><span>✓</span><span>Registro confirmado: ${x.keys.length} distritos incorporados desde matriz_ejemplo.xlsx. El registro queda bloqueado.</span></div>${agregadosHTML(w)}`;
-  return `<div class="xhead"><div><h3 style="margin:0">Importar distritos desde Excel</h3><p class="muted" style="margin:2px 0 0">Cargue un archivo con Región, Provincia y Distrito. Se abrirá una ventana con la validación de cada fila para que decida si incorpora los registros válidos.</p></div><button class="btn btn-ghost btn-sm" data-act="tpl">${xsvg('file',16)} Descargar plantilla</button></div>
+  const alerta=w.confirmed?`<div class="alert a-ok" role="status"><span>✓</span><span>Registro confirmado: ${x.keys.length} distritos incorporados desde matriz_ejemplo.xlsx. Si se equivocó al agregar, cargue de nuevo el archivo y vuelva a confirmar.</span></div>`:'';
+  return alerta+`<div class="xhead"><div><h3 style="margin:0">Importar distritos desde Excel</h3><p class="muted" style="margin:2px 0 0">Cargue un archivo con Región, Provincia y Distrito. Se abrirá una ventana con la validación de cada fila para que decida si incorpora los registros válidos.</p></div><button class="btn btn-ghost btn-sm" data-act="tpl">${xsvg('file',16)} Descargar plantilla</button></div>
   <h3 class="xh">Cargar archivo</h3>
   <p class="xcols">Columnas: <b>REGIÓN</b>, <b>PROVINCIA</b> y <b>DISTRITO</b> (se identifica el UBIGEO automáticamente).</p>
   <div class="dz xdz">${xsvg('up',28)}<div class="xdt">${x?'Arrastre otro archivo Excel aquí o haga clic para reemplazar el actual':'Arrastre su archivo .xlsx o .csv aquí o haga clic para seleccionarlo'}</div><div class="xds">.xlsx / .csv · se validan códigos, duplicados e inexistentes antes de incorporar</div><button class="btn btn-ghost btn-sm" style="margin-top:8px" data-act="xl">${x?'Simular otra carga':'Simular carga de “matriz_ejemplo.xlsx” (86 filas)'}</button></div>
-  ${x?`<div class="xfile">${xsvg('file',16)}<span>matriz_ejemplo.xlsx · ${x.keys.length} distritos incorporados tras la validación</span><button data-act="xlclear" aria-label="Quitar archivo">✕</button></div>${agregadosHTML(w)}`:''}`;
+  ${x?`${w.confirmed?'':`<div class="xfile">${xsvg('file',16)}<span>matriz_ejemplo.xlsx · ${x.keys.length} distritos incorporados tras la validación</span><button data-act="xlclear" aria-label="Quitar archivo">✕</button></div>`}${agregadosHTML(w)}`:''}`;
 }
 function step2HTML(w){
   const isP=w.mode==='prorroga';
@@ -1105,13 +1105,16 @@ document.addEventListener('toggle',e=>{const el=e.target,w=curWiz();if(w&&el.dat
 /* Validación de la importación: modal con resumen y tabla de todos los registros; ahí se decide si se incorporan los válidos */
 function openXl(w){
   w.xl={tab:'todos',page:0};
+  /* Registro ya confirmado: la nueva carga reemplaza a la anterior; si se cancela, se restituye */
+  const prev=(w.confirmed&&!w.edit&&w.xlFile)?w.xlFile.keys.slice():null;
+  if(prev)prev.forEach(k=>w.sel.delete(k));
   const rows=xlRows(),ok=rows.filter(r=>xlStat(r,w)==='ok'),obs=rows.length-ok.length;
   const m=document.createElement('div');m.className='modal';m.id='modal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-labelledby','mt');
   m.innerHTML=`<div class="box xlbox"><div class="mh"><div><h2 id="mt">Validación del archivo</h2><p class="muted" style="margin:2px 0 0">matriz_ejemplo.xlsx · revise las validaciones y decida. ${w.edit?'Al agregar, los distritos válidos se incorporan al ámbito.':'Al confirmar, el registro queda confirmado y bloqueado con los distritos válidos.'}</p></div><button class="btn-link" data-m="x" aria-label="Cerrar">✕</button></div>
    <div id="xlres">${xlResultHTML(w)}</div>
    <div class="acts2"><button class="btn btn-ghost" data-m="x">Cancelar</button><button class="btn btn-primary" data-m="ok" id="mok"${ok.length?'':' disabled'}>${w.edit?'Agregar':'Confirmar'} ${ok.length} distritos</button></div></div>`;
   document.body.appendChild(m);$('#mok').focus();
-  m.addEventListener('click',ev=>{const b=ev.target.closest('[data-m]');if(ev.target===m||(b&&b.dataset.m==='x')){m.remove();w.xl=false;return;}
+  m.addEventListener('click',ev=>{const b=ev.target.closest('[data-m]');if(ev.target===m||(b&&b.dataset.m==='x')){m.remove();w.xl=false;if(prev)prev.forEach(k=>w.sel.add(k));return;}
     if(b&&b.dataset.m==='ok'&&!b.disabled){const keys=ok.map(r=>r.k);keys.forEach(k=>w.sel.add(k));w.xl=false;m.remove();w.xlFile={keys};if(!w.edit){w.confirmed=true;finishConfirm(w);return;}render(true);toast(keys.length+' distritos agregados desde el archivo');}});
 }
 function openConfirm(w){
